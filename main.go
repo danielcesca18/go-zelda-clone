@@ -74,7 +74,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 func main() {
 	ebiten.SetWindowSize(640, 480)
-	ebiten.SetWindowTitle("Jogo!")
+	ebiten.SetWindowTitle("Ebiten Zelda Clone")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	// load the image from file
