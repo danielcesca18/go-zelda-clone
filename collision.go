@@ -74,6 +74,41 @@ func CheckSoftCollision(sprite *entities.Sprite, ownCollider entities.Collider, 
 	}
 }
 
+// func VibrateControllerOnCollision(player *entities.Player, colliders []entities.Collider, gamepadIDs map[ebiten.GamepadID]struct{}) {
+// 	vibrationStrength := 0.0
+
+// 	for _, collider := range colliders {
+// 		if collider.Rect.Overlaps(
+// 			entities.FloatRect{
+// 				MinX: player.X,
+// 				MinY: player.Y,
+// 				MaxX: player.X + 16.0,
+// 				MaxY: player.Y + 16.0,
+// 			},
+// 		) {
+// 			// Increase vibration strength based on the number of collisions
+// 			vibrationStrength += 0.1 // Adjust this value as needed
+// 		}
+// 	}
+
+// 	// Cap the vibration strength to a maximum value
+// 	if vibrationStrength > 1.0 {
+// 		vibrationStrength = 1.0
+// 	}
+
+// 	// Apply the vibration to the controller
+// 	for gamepadID := range gamepadIDs {
+// 		if ebiten.IsStandardGamepadLayoutAvailable(gamepadID) {
+// 			op := &ebiten.VibrateGamepadOptions{
+// 				Duration:        200 * time.Millisecond,
+// 				StrongMagnitude: vibrationStrength,
+// 				WeakMagnitude:   vibrationStrength,
+// 			}
+// 			ebiten.VibrateGamepad(gamepadID, op)
+// 		}
+// 	}
+// }
+
 func IsTouchingPlayer(spriteCollider entities.Collider, player entities.Player) bool {
 	if spriteCollider.Rect.Overlaps(
 		entities.FloatRect{

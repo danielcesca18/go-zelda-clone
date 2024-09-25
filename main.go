@@ -27,10 +27,14 @@ type Game struct {
 	spawnEnemies  bool
 	killEnemies   bool
 	showColliders bool
+	gamepadIDsBuf []ebiten.GamepadID
+	gamepadIDs    map[ebiten.GamepadID]struct{}
 }
 
 func (g *Game) Update() error {
-	g.HandleControls()
+	g.HandleWASDControls()
+
+	// g.HandleGamepadControls()
 
 	g.UpdatePlayer()
 

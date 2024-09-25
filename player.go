@@ -2,14 +2,59 @@ package main
 
 import (
 	"image"
+	"log"
 	"math"
 	"math/rand"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-func (g *Game) HandleControls() {
+func (g *Game) HandleGamepadControls() {
+	if g.gamepadIDs == nil {
+		g.gamepadIDs = map[ebiten.GamepadID]struct{}{}
+	}
+
+	// Log the gamepad connection events.
+	g.gamepadIDsBuf = inpututil.AppendJustConnectedGamepadIDs(g.gamepadIDsBuf[:0])
+	for _, id := range g.gamepadIDsBuf {
+		log.Printf("gamepad connected: id: %d, SDL ID: %s", id, ebiten.GamepadSDLID(id))
+		g.gamepadIDs[id] = struct{}{}
+	}
+	for id := range g.gamepadIDs {
+		if inpututil.IsGamepadJustDisconnected(id) {
+			log.Printf("gamepad disconnected: id: %d", id)
+			delete(g.gamepadIDs, id)
+		}
+	}
+
+	for id := range g.gamepadIDs {
+		// Handle gamepad axis movement
+		axisX := ebiten.GamepadAxisValue(id, 0)
+		axisY := ebiten.GamepadAxisValue(id, 1)
+
+		op := &ebiten.VibrateGamepadOptions{
+			Duration:        200 * time.Millisecond,
+			StrongMagnitude: 0.5,
+			WeakMagnitude:   0.5,
+		}
+		ebiten.VibrateGamepad(id, op)
+
+		// Deadzone adjustment
+		const deadzone = 0.1
+		if math.Abs(axisX) < deadzone {
+			axisX = 0
+		}
+		if math.Abs(axisY) < deadzone {
+			axisY = 0
+		}
+
+		g.Move(axisX, axisY)
+	}
+}
+
+func (g *Game) HandleWASDControls() {
 
 	// Player movement
 	var directionX, directionY float64
@@ -80,6 +125,8 @@ func (g *Game) Move(directionX, directionY float64) {
 }
 
 func (g *Game) UpdatePlayer() {
+
+	// VibrateControllerOnCollision(g.player, g.softColliders, g.gamepadIDs)
 
 	CheckSoftCollision(g.player.Sprite, g.player.Collider, g.softColliders)
 
