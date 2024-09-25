@@ -65,7 +65,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		len(g.enemies),
 	)
 	ebitenutil.DebugPrintAt(screen, msg, 0, 0)
-	ebitenutil.DebugPrintAt(screen, "[WASD]Move [Q/E]Enemy [F]Colliders [R]Carnage", 0, 215)
+	ebitenutil.DebugPrintAt(screen, "[WASD]Move [Q/E]Enemy [F]Colliders [R]Carnage", 0, 225)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
