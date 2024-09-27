@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 
 	"go-game/entities"
@@ -29,6 +30,8 @@ type Game struct {
 	killEnemies          bool
 	showColliders        bool
 	enemiesFollowsPlayer bool
+	audioContext         *audio.Context
+	musicPlayer          *audio.Player
 }
 
 func (g *Game) Update() error {
@@ -188,6 +191,10 @@ func main() {
 	}
 
 	game.softColliders = append(game.softColliders, game.player.Collider)
+
+	if err := game.PlayOGGSound("assets/sounds/music.ogg"); err != nil {
+		log.Fatal(err)
+	}
 
 	if err := ebiten.RunGame(&game); err != nil {
 		log.Fatal(err)

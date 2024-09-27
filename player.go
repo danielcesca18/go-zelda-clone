@@ -94,6 +94,7 @@ func (g *Game) Move(directionX, directionY float64) {
 }
 
 func (g *Game) Attack() {
+	g.PlayWAVSound("assets/sounds/hit.wav")
 	for _, enemy := range g.enemies {
 		if g.player.Hitbox.Overlaps(enemy.Sprite) {
 			*enemy.Health -= g.player.Damage
