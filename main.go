@@ -25,6 +25,7 @@ type Game struct {
 	hardColliders        []image.Rectangle
 	softColliders        []entities.Collider
 	Tick                 int
+	attackCounter        int
 	Points               int
 	spawnEnemies         bool
 	killEnemies          bool
@@ -48,6 +49,7 @@ func (g *Game) Update() error {
 	g.UpdateHitbox()
 
 	g.Tick++
+	g.attackCounter++
 
 	return nil
 }
@@ -66,6 +68,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.DrawColliders(screen)
 
 	g.DrawHitbox(screen)
+
+	g.DrawAttack(screen, opts)
 
 	// draw fps counter
 	msg := fmt.Sprintf(
@@ -90,6 +94,12 @@ func main() {
 
 	// load the image from file
 	playerImg, _, err := ebitenutil.NewImageFromFile("assets/images/player.png")
+	if err != nil {
+		// handle error
+		log.Fatal(err)
+	}
+
+	attackImg, _, err := ebitenutil.NewImageFromFile("assets/images/attack.png")
 	if err != nil {
 		// handle error
 		log.Fatal(err)
@@ -153,13 +163,17 @@ func main() {
 
 	game := Game{
 		player: &entities.Player{
+			Status: "IDLE",
 			Sprite: &entities.Sprite{
 				Img: playerImg,
 				X:   150.0,
 				Y:   150.0,
 			},
 			Health: 3,
-			Damage: 10,
+			Attack: entities.Attack{
+				Damage: 10,
+				Img:    attackImg,
+			},
 			Collider: entities.Collider{
 				Rect: &entities.FloatRect{
 					MinX: 150.0,

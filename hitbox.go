@@ -61,6 +61,11 @@ func (g *Game) UpdateHitbox() {
 		g.player.Hitbox.Vertices[i][0] = vertices[i][0]
 		g.player.Hitbox.Vertices[i][1] = vertices[i][1]
 	}
+
+	g.player.Hitbox.X = hitboxX
+	g.player.Hitbox.Y = hitboxY
+	g.player.Hitbox.DirectionX = directionX
+	g.player.Hitbox.DirectionY = directionY
 }
 
 func (g *Game) DrawHitbox(screen *ebiten.Image) {

@@ -77,7 +77,7 @@ func (g *Game) updateEnemies() {
 
 		if *sprite.Health <= 0 {
 			g.killEnemy(sprite)
-			g.PlayWAVSound("assets/sounds/hit.wav")
+			// g.PlayWAVSound("assets/sounds/hit.wav")
 			g.Points++
 			continue
 		}

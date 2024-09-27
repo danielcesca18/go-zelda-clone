@@ -94,10 +94,16 @@ func (g *Game) Move(directionX, directionY float64) {
 }
 
 func (g *Game) Attack() {
-	g.PlayWAVSound("assets/sounds/hit.wav")
-	for _, enemy := range g.enemies {
-		if g.player.Hitbox.Overlaps(enemy.Sprite) {
-			*enemy.Health -= g.player.Damage
+	if g.player.Status == "IDLE" {
+		g.PlayWAVSound("assets/sounds/hit.wav")
+
+		g.player.Status = "ATTACK"
+		g.attackCounter = 0 // Reset the tick counter to start the animation from the beginning
+
+		for _, enemy := range g.enemies {
+			if g.player.Hitbox.Overlaps(enemy.Sprite) {
+				*enemy.Health -= g.player.Attack.Damage
+			}
 		}
 	}
 }
@@ -117,6 +123,14 @@ func (g *Game) UpdatePlayer() {
 	g.player.Collider.Rect.MinY = g.player.Y
 }
 
+const (
+	frameOX     = 0
+	frameOY     = 0
+	frameWidth  = 32
+	frameHeight = 32
+	frameCount  = 4
+)
+
 func (g *Game) DrawPlayer(screen *ebiten.Image, opts ebiten.DrawImageOptions) {
 	// set the translation of our drawImageOptions to the player's position
 	opts.GeoM.Translate(g.player.X, g.player.Y)
@@ -132,4 +146,34 @@ func (g *Game) DrawPlayer(screen *ebiten.Image, opts ebiten.DrawImageOptions) {
 	)
 
 	opts.GeoM.Reset()
+}
+
+func (g *Game) DrawAttack(screen *ebiten.Image, opts ebiten.DrawImageOptions) {
+	// Draw attack image
+	if g.player.Status == "ATTACK" {
+
+		// Reset GeoM
+		opts.GeoM.Reset()
+
+		// Translate to the hitbox position
+		opts.GeoM.Translate(-float64(frameWidth)/2, -float64(frameHeight)/2)                 // Center the image
+		opts.GeoM.Rotate(math.Atan2(g.player.Hitbox.DirectionY, g.player.Hitbox.DirectionX)) // Rotate around the center
+		opts.GeoM.Translate(g.player.Hitbox.X, g.player.Hitbox.Y)                            // Move to the hitbox position
+		opts.GeoM.Translate(g.cam.X, g.cam.Y)                                                // Adjust for camera position
+
+		// Calculate the frame to draw
+		i := (g.attackCounter / 5) % frameCount
+		sx, sy := frameOX+i*frameWidth, frameOY
+
+		// Draw the attack image
+		screen.DrawImage(g.player.Attack.Img.SubImage(image.Rect(sx, sy, sx+frameWidth, sy+frameHeight)).(*ebiten.Image), &opts)
+
+		// Reset GeoM
+		opts.GeoM.Reset()
+
+		// Reset player status to IDLE after the last frame
+		if i == frameCount-1 {
+			g.player.Status = "IDLE"
+		}
+	}
 }
