@@ -19,8 +19,10 @@ Or, if you are using WSL
 
 ## Controls
 - [WASD] Move
+- [LMouseButton] Attack
 - [Q] Toggle auto spawner
 - [E] Spawn one enemy
+- [G] Toggle enemies follows player
 - [F] Togle collider box visualization
 - [R] Kill all enemies
 
