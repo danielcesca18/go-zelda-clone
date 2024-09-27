@@ -14,19 +14,21 @@ import (
 
 type Game struct {
 	// the image and position variables for our player
-	player        *entities.Player
-	enemies       []*entities.Enemy
-	potions       []*entities.Potion
-	tilemapJSON   *TilemapJSON
-	tilesets      []Tileset
-	tilemapImg    *ebiten.Image
-	cam           *Camera
-	hardColliders []image.Rectangle
-	softColliders []entities.Collider
-	Tick          int
-	spawnEnemies  bool
-	killEnemies   bool
-	showColliders bool
+	player               *entities.Player
+	enemies              []*entities.Enemy
+	potions              []*entities.Potion
+	tilemapJSON          *TilemapJSON
+	tilesets             []Tileset
+	tilemapImg           *ebiten.Image
+	cam                  *Camera
+	hardColliders        []image.Rectangle
+	softColliders        []entities.Collider
+	Tick                 int
+	Points               int
+	spawnEnemies         bool
+	killEnemies          bool
+	showColliders        bool
+	enemiesFollowsPlayer bool
 }
 
 func (g *Game) Update() error {
@@ -39,6 +41,8 @@ func (g *Game) Update() error {
 	g.updateEnemies()
 
 	g.UpdateCamera()
+
+	g.UpdateHitbox()
 
 	g.Tick++
 
@@ -58,14 +62,18 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	g.DrawColliders(screen)
 
+	g.DrawHitbox(screen)
+
 	// draw fps counter
 	msg := fmt.Sprintf(
-		"TPS: %0.2f\nEnemies: %d",
+		"TPS: %0.2f\nEnemies: %d\nPoints: %d",
 		ebiten.ActualTPS(),
 		len(g.enemies),
+		g.Points,
 	)
 	ebitenutil.DebugPrintAt(screen, msg, 0, 0)
-	ebitenutil.DebugPrintAt(screen, "[WASD]Move [Q/E]Enemy [F]Colliders [R]Carnage", 0, 225)
+	ebitenutil.DebugPrintAt(screen, "Controls: [W/A/S/D] [LButton] [Q/E/G] [F] [R]", 0, 225)
+
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
@@ -148,6 +156,7 @@ func main() {
 				Y:   150.0,
 			},
 			Health: 3,
+			Damage: 10,
 			Collider: entities.Collider{
 				Rect: &entities.FloatRect{
 					MinX: 150.0,
@@ -157,16 +166,25 @@ func main() {
 				},
 				Weight: 40,
 			},
+			Hitbox: &entities.Hitbox{
+				Vertices: [4][2]float64{
+					{0, 0},
+					{0, 0},
+					{0, 0},
+					{0, 0},
+				},
+			},
 		},
-		enemies:       []*entities.Enemy{},
-		potions:       []*entities.Potion{},
-		tilemapJSON:   tilemapJSON,
-		tilemapImg:    tilemapImg,
-		tilesets:      tilesets,
-		cam:           NewCamera(0.0, 0.0),
-		hardColliders: hardColliders,
-		spawnEnemies:  false,
-		killEnemies:   false,
+		enemies:              []*entities.Enemy{},
+		potions:              []*entities.Potion{},
+		tilemapJSON:          tilemapJSON,
+		tilemapImg:           tilemapImg,
+		tilesets:             tilesets,
+		cam:                  NewCamera(0.0, 0.0),
+		hardColliders:        hardColliders,
+		spawnEnemies:         false,
+		killEnemies:          false,
+		enemiesFollowsPlayer: true,
 	}
 
 	game.softColliders = append(game.softColliders, game.player.Collider)

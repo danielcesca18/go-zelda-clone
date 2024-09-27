@@ -39,14 +39,16 @@ func (g *Game) newEnemy(x, y float64) {
 
 	g.softColliders = append(g.softColliders, newCollider)
 
+	health := uint(20)
+
 	g.enemies = append(g.enemies, &entities.Enemy{
 		Sprite: &entities.Sprite{
 			Img: enemyImg,
 			X:   x,
 			Y:   y,
 		},
-		FollowsPlayer: true,
-		Collider:      g.softColliders[len(g.softColliders)-1],
+		Collider: g.softColliders[len(g.softColliders)-1],
+		Health:   &health,
 	})
 }
 
@@ -73,10 +75,16 @@ func (g *Game) updateEnemies() {
 			continue
 		}
 
+		if *sprite.Health <= 0 {
+			g.killEnemy(sprite)
+			g.Points++
+			continue
+		}
+
 		sprite.Dx = 0.0
 		sprite.Dy = 0.0
 
-		if sprite.FollowsPlayer {
+		if g.enemiesFollowsPlayer {
 			// if sprite.FollowsPlayer {
 			// Calcular a direção do movimento em relação ao jogador
 			directionX := (g.player.X + 8) - (sprite.X + 8)

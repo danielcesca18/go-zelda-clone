@@ -11,6 +11,11 @@ import (
 
 func (g *Game) HandleControls() {
 
+	// Player attack
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		g.Attack()
+	}
+
 	// Player movement
 	var directionX, directionY float64
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
@@ -27,6 +32,15 @@ func (g *Game) HandleControls() {
 	g.Move(directionX, directionY)
 
 	// Misc
+
+	// enemies follows player
+	if inpututil.IsKeyJustPressed(ebiten.KeyG) {
+		if !g.enemiesFollowsPlayer {
+			g.enemiesFollowsPlayer = true
+		} else {
+			g.enemiesFollowsPlayer = false
+		}
+	}
 
 	// auto spawn enemies
 	if inpututil.IsKeyJustPressed(ebiten.KeyQ) {
@@ -76,6 +90,14 @@ func (g *Game) Move(directionX, directionY float64) {
 	} else {
 		g.player.Dx = 0
 		g.player.Dy = 0
+	}
+}
+
+func (g *Game) Attack() {
+	for _, enemy := range g.enemies {
+		if g.player.Hitbox.Overlaps(enemy.Sprite) {
+			*enemy.Health -= g.player.Damage
+		}
 	}
 }
 
