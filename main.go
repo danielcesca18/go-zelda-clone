@@ -184,7 +184,7 @@ func main() {
 			},
 			Health: 3,
 			Attack: entities.Attack{
-				Damage: 10,
+				Damage: 5,
 				Img:    attackImg,
 			},
 			Collider: entities.Collider{

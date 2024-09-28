@@ -112,6 +112,7 @@ func (g *Game) Attack() {
 		for _, enemy := range g.enemies {
 			if g.player.Hitbox.Overlaps(enemy.Sprite) {
 				*enemy.Health -= g.player.Attack.Damage
+				*enemy.Status = "HIT"
 			}
 		}
 	}
