@@ -135,6 +135,10 @@ func main() {
 		log.Fatal(err)
 	}
 
+	if err := CreateKillSound("assets/sounds/kill.wav"); err != nil {
+		log.Fatal(err)
+	}
+
 	// collider for buildings
 	hardColliders := make([]image.Rectangle, 0)
 	for layerIndex, layer := range tilemapJSON.Layers {
