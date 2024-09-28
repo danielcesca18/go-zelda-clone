@@ -25,6 +25,8 @@ Or, if you are using WSL
 - [G] Toggle enemies follows player
 - [F] Togle collider box visualization
 - [R] Kill all enemies
+- [-] Volume up
+- [=] Volume down
 
 ## Assets
 - [Ninja Adventure Asset Pack](https://pixel-boy.itch.io/ninja-adventure-asset-pack)

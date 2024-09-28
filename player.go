@@ -33,6 +33,15 @@ func (g *Game) HandleControls() {
 
 	// Misc
 
+	// music volume
+	if inpututil.IsKeyJustPressed(ebiten.KeyMinus) {
+		g.SetVolume(false)
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyEqual) {
+		g.SetVolume(true)
+	}
+
 	// enemies follows player
 	if inpututil.IsKeyJustPressed(ebiten.KeyG) {
 		if !g.enemiesFollowsPlayer {
@@ -95,7 +104,7 @@ func (g *Game) Move(directionX, directionY float64) {
 
 func (g *Game) Attack() {
 	if g.player.Status == "IDLE" {
-		g.PlayWAVSound("assets/sounds/hit.wav")
+		HitSoundPlayer.Play()
 
 		g.player.Status = "ATTACK"
 		g.attackCounter = 0 // Reset the tick counter to start the animation from the beginning

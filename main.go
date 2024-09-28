@@ -7,7 +7,6 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 
 	"go-game/entities"
@@ -31,8 +30,7 @@ type Game struct {
 	killEnemies          bool
 	showColliders        bool
 	enemiesFollowsPlayer bool
-	audioContext         *audio.Context
-	musicPlayer          *audio.Player
+	globalVolume         float64
 }
 
 func (g *Game) Update() error {
@@ -70,6 +68,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.DrawHitbox(screen)
 
 	g.DrawAttack(screen, opts)
+
+	MusicLoop()
 
 	// draw fps counter
 	msg := fmt.Sprintf(
@@ -127,6 +127,14 @@ func main() {
 		log.Fatal(err)
 	}
 
+	if err := CreateMusicSound("assets/sounds/music.ogg"); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := CreateHitSound("assets/sounds/hit.wav"); err != nil {
+		log.Fatal(err)
+	}
+
 	// collider for buildings
 	hardColliders := make([]image.Rectangle, 0)
 	for layerIndex, layer := range tilemapJSON.Layers {
@@ -162,6 +170,7 @@ func main() {
 	}
 
 	game := Game{
+		globalVolume: 0.1,
 		player: &entities.Player{
 			Status: "IDLE",
 			Sprite: &entities.Sprite{
@@ -206,9 +215,8 @@ func main() {
 
 	game.softColliders = append(game.softColliders, game.player.Collider)
 
-	if err := game.PlayOGGSound("assets/sounds/music.ogg"); err != nil {
-		log.Fatal(err)
-	}
+	MusicPlayer.Play()
+	SetVolumeValue(game.globalVolume)
 
 	if err := ebiten.RunGame(&game); err != nil {
 		log.Fatal(err)

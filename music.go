@@ -12,11 +12,49 @@ const (
 	sampleRate = 44100
 )
 
+var (
+	audioContext   *audio.Context
+	MusicPlayer    *audio.Player
+	HitSoundPlayer *audio.Player
+)
+
+func (g *Game) SetVolume(increase bool) {
+	if increase {
+		g.globalVolume += 0.1
+	} else {
+		g.globalVolume -= 0.1
+	}
+	if g.globalVolume > 1 {
+		g.globalVolume = 1
+	} else if g.globalVolume < 0 {
+		g.globalVolume = 0
+	}
+
+	MusicPlayer.SetVolume(g.globalVolume)
+	HitSoundPlayer.SetVolume(g.globalVolume)
+
+}
+
+func SetVolumeValue(volume float64) {
+	MusicPlayer.SetVolume(volume)
+	HitSoundPlayer.SetVolume(volume)
+
+}
+
+func MusicLoop() {
+	if !MusicPlayer.IsPlaying() {
+		MusicPlayer.Rewind()
+	}
+	if !HitSoundPlayer.IsPlaying() {
+		HitSoundPlayer.Rewind()
+	}
+}
+
 // for music
-func (g *Game) PlayOGGSound(filePath string) error {
+func CreateMusicSound(filePath string) error {
 	// Inicializar o contexto de áudio
-	if g.audioContext == nil {
-		g.audioContext = audio.NewContext(sampleRate)
+	if audioContext == nil {
+		audioContext = audio.NewContext(sampleRate)
 	}
 
 	// Ler o arquivo de música
@@ -36,23 +74,23 @@ func (g *Game) PlayOGGSound(filePath string) error {
 	// f.Close()
 
 	// Criar um player de áudio
-	g.musicPlayer, err = g.audioContext.NewPlayer(audio.NewInfiniteLoop(d, d.Length()))
+	MusicPlayer, err = audioContext.NewPlayer(audio.NewInfiniteLoop(d, d.Length()))
 	if err != nil {
 		return err
 	}
 
-	// Tocar a música em loop
-	g.musicPlayer.SetVolume(0.1)
-	g.musicPlayer.Play()
+	// // Tocar a música em loop
+	// MusicPlayer.SetVolume(*volume)
+	// g.musicPlayer.Play()
 
 	return nil
 }
 
 // for sound effects
-func (g *Game) PlayWAVSound(filePath string) error {
+func CreateHitSound(filePath string) error {
 	// Inicializar o contexto de áudio
-	if g.audioContext == nil {
-		g.audioContext = audio.NewContext(sampleRate)
+	if audioContext == nil {
+		audioContext = audio.NewContext(sampleRate)
 	}
 
 	// Ler o arquivo de música
@@ -69,14 +107,14 @@ func (g *Game) PlayWAVSound(filePath string) error {
 	// f.Close()
 
 	// Criar um player de áudio
-	g.musicPlayer, err = g.audioContext.NewPlayer(d)
+	HitSoundPlayer, err = audioContext.NewPlayer(d)
 	if err != nil {
 		return err
 	}
 
-	// Tocar a música em loop
-	g.musicPlayer.SetVolume(0.1)
-	g.musicPlayer.Play()
+	// // Tocar a música em loop
+	// musicPlayer.SetVolume(0.1)
+	// musicPlayer.Play()
 
 	return nil
 }
