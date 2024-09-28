@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -105,7 +104,7 @@ func CreateSound(filePath string) (*audio.Player, error) {
 
 	//get file extension
 	ext := filepath.Ext(filePath)
-	fmt.Println("File extension: ", ext)
+	// fmt.Println("File extension: ", ext)
 
 	if ext == ".ogg" {
 		d, err := vorbis.DecodeWithSampleRate(sampleRate, f)

@@ -23,7 +23,7 @@ Or, if you are using WSL
 - [Q] Toggle auto spawner
 - [E] Spawn one enemy
 - [G] Toggle enemies follows player
-- [F] Togle collider box visualization
+- [F] Toggle collider box visualization
 - [R] Kill all enemies
 - [-] Volume up
 - [=] Volume down
