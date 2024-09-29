@@ -141,6 +141,8 @@ func (g *Game) updateEnemies() {
 			}
 		}
 
+		g.IsTouchingPlayer(enemy.Collider, *g.player)
+
 		CheckSoftCollision(enemy.Sprite, enemy.Collider, g.softColliders)
 
 		enemy.X += enemy.Dx

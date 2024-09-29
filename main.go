@@ -8,6 +8,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 
 	"go-game/entities"
 )
@@ -81,6 +82,16 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	ebitenutil.DebugPrintAt(screen, msg, 0, 0)
 	ebitenutil.DebugPrintAt(screen, "Controls: [W/A/S/D] [LButton] [Q/E/G] [F] [R]", 0, 225)
 
+	g.DrawHUD(screen)
+}
+
+func (g *Game) DrawHUD(screen *ebiten.Image) {
+	// Draw HUD
+	// Draw health bar
+	ebitenutil.DebugPrintAt(screen, "Health", 170, 7)
+	vector.DrawFilledRect(screen, 209, 9, 102, 12, color.RGBA{255, 255, 255, 255}, false)
+	vector.DrawFilledRect(screen, 210, 10, 100, 10, color.RGBA{220, 30, 30, 255}, false)
+	vector.DrawFilledRect(screen, 210, 10, float32(100*(*g.player.Health)/20), 10, color.RGBA{0, 204, 0, 255}, false)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
@@ -173,16 +184,19 @@ func main() {
 		}
 	}
 
+	playerHealth := uint(20)
+
 	game := Game{
 		globalVolume: 0.1,
 		player: &entities.Player{
-			Status: "IDLE",
+			Invencible: false,
+			Status:     "IDLE",
 			Sprite: &entities.Sprite{
 				Img: playerImg,
 				X:   150.0,
 				Y:   150.0,
 			},
-			Health: 3,
+			Health: &playerHealth,
 			Attack: entities.Attack{
 				Damage: 5,
 				Img:    attackImg,

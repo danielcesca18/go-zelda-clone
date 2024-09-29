@@ -74,7 +74,7 @@ func CheckSoftCollision(sprite *entities.Sprite, ownCollider entities.Collider, 
 	}
 }
 
-func IsTouchingPlayer(spriteCollider entities.Collider, player entities.Player) bool {
+func (g *Game) IsTouchingPlayer(spriteCollider entities.Collider, player entities.Player) bool {
 	if spriteCollider.Rect.Overlaps(
 		entities.FloatRect{
 			MinX: player.X,
@@ -83,6 +83,10 @@ func IsTouchingPlayer(spriteCollider entities.Collider, player entities.Player) 
 			MaxY: player.Y + 16.0,
 		},
 	) {
+		if !player.Invencible {
+			*g.player.Health -= 1
+			g.player.Invencible = true
+		}
 		return true
 	}
 

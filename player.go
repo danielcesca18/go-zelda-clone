@@ -119,7 +119,6 @@ func (g *Game) Attack() {
 }
 
 func (g *Game) UpdatePlayer() {
-
 	CheckSoftCollision(g.player.Sprite, g.player.Collider, g.softColliders)
 
 	g.player.X += g.player.Dx
@@ -131,6 +130,20 @@ func (g *Game) UpdatePlayer() {
 	g.player.Collider.Rect.MinX = g.player.X
 	g.player.Collider.Rect.MaxY = g.player.Y + 16
 	g.player.Collider.Rect.MinY = g.player.Y
+
+	if g.player.Invencible {
+		g.player.HitCounter++
+
+		if g.player.HitCounter > 15 {
+			g.player.Invencible = false
+			g.player.HitCounter = 0
+		}
+	}
+
+	// morreu crashou
+	if *g.player.Health <= 0 {
+		g.player = nil
+	}
 }
 
 const (
