@@ -102,6 +102,29 @@ func (g *Game) Move(directionX, directionY float64) {
 	}
 }
 
+func (g *Game) UsePotion() {
+	for i, potion := range g.potions {
+		if potion.Status == "DROPPED" {
+			if g.player.Hitbox.Overlaps(potion.Sprite) {
+				*g.player.Health = min(g.player.MaxHealth, *g.player.Health+potion.AmtHeal)
+				g.potions = append(g.potions[:i], g.potions[i+1:]...) // Remove the potion from the game
+
+				HealSoundPlayer.Play()
+
+				break
+			}
+		}
+		if potion.Status == "DROPPING" {
+			potion.Count++
+		}
+
+		if potion.Count > 15 {
+			potion.Status = "DROPPED"
+			potion.Count = 0
+		}
+	}
+}
+
 func (g *Game) Attack() {
 	if g.player.Status == "IDLE" {
 		HitSoundPlayer.Play()
@@ -130,6 +153,8 @@ func (g *Game) UpdatePlayer() {
 	g.player.Collider.Rect.MinX = g.player.X
 	g.player.Collider.Rect.MaxY = g.player.Y + 16
 	g.player.Collider.Rect.MinY = g.player.Y
+
+	g.UsePotion()
 
 	if g.player.Invencible {
 		g.player.HitCounter++
@@ -198,5 +223,22 @@ func (g *Game) DrawAttack(screen *ebiten.Image, opts ebiten.DrawImageOptions) {
 		if i == frameCount-1 {
 			g.player.Status = "IDLE"
 		}
+	}
+}
+
+func (g *Game) DrawPotions(screen *ebiten.Image, opts ebiten.DrawImageOptions) {
+	for _, sprite := range g.potions {
+		opts.GeoM.Reset()
+		opts.ColorScale.Reset()
+
+		opts.GeoM.Translate(sprite.X, sprite.Y)
+		opts.GeoM.Translate(g.cam.X, g.cam.Y)
+
+		screen.DrawImage(
+			sprite.Img.SubImage(
+				image.Rect(0, 0, 16, 16),
+			).(*ebiten.Image),
+			&opts,
+		)
 	}
 }

@@ -21,6 +21,7 @@ var (
 	KillSoundPlayer      *audio.Player
 	GameoverSoundPlayer  *audio.Player
 	PlayerHitSoundPlayer *audio.Player
+	HealSoundPlayer      *audio.Player
 )
 
 // for music
@@ -76,6 +77,16 @@ func CreateGameoverSound(filePath string) error {
 	return nil
 }
 
+func CreateHealSound(filePath string) error {
+	var err error
+	HealSoundPlayer, err = CreateSound(filePath)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (g *Game) SetVolume(increase bool) {
 	if increase {
 		g.globalVolume += 0.1
@@ -93,6 +104,7 @@ func (g *Game) SetVolume(increase bool) {
 	KillSoundPlayer.SetVolume(g.globalVolume)
 	GameoverSoundPlayer.SetVolume(g.globalVolume)
 	PlayerHitSoundPlayer.SetVolume(g.globalVolume)
+	HealSoundPlayer.SetVolume(g.globalVolume)
 }
 
 func SetVolumeValue(volume float64) {
@@ -101,6 +113,7 @@ func SetVolumeValue(volume float64) {
 	KillSoundPlayer.SetVolume(volume)
 	GameoverSoundPlayer.SetVolume(volume)
 	PlayerHitSoundPlayer.SetVolume(volume)
+	HealSoundPlayer.SetVolume(volume)
 
 }
 
@@ -119,6 +132,9 @@ func MusicLoop() {
 	}
 	if !GameoverSoundPlayer.IsPlaying() {
 		GameoverSoundPlayer.Rewind()
+	}
+	if !HealSoundPlayer.IsPlaying() {
+		HealSoundPlayer.Rewind()
 	}
 }
 

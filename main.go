@@ -75,6 +75,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 		g.DrawAttack(screen, opts)
 
+		g.DrawPotions(screen, opts)
+
 		// draw fps counter
 		msg := fmt.Sprintf(
 			"TPS: %0.2f\nEnemies: %d\nScore: %d",
@@ -118,12 +120,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// potionImg, _, err := ebitenutil.NewImageFromFile("assets/images/potion.png")
-	// if err != nil {
-	// 	// handle error
-	// 	log.Fatal(err)
-	// }
-
 	tilemapImg, _, err := ebitenutil.NewImageFromFile("assets/images/TilesetFloor.png")
 	if err != nil {
 		// handle error
@@ -157,6 +153,10 @@ func main() {
 	}
 
 	if err := CreateGameoverSound("assets/sounds/gameover.wav"); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := CreateHealSound("assets/sounds/heal.wav"); err != nil {
 		log.Fatal(err)
 	}
 
@@ -238,7 +238,7 @@ func main() {
 		tilesets:             tilesets,
 		cam:                  NewCamera(0.0, 0.0),
 		hardColliders:        hardColliders,
-		spawnEnemies:         false,
+		spawnEnemies:         true,
 		killEnemies:          false,
 		enemiesFollowsPlayer: true,
 	}

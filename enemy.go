@@ -5,18 +5,52 @@ import (
 	"image"
 	"log"
 	"math"
+	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 func (g *Game) spawnEnemy() {
+	if g.Tick%180 == 0 && g.spawnEnemies {
+		// Base number of enemies to spawn
+		baseEnemies := 1
 
-	if g.Tick%60 == 0 && g.spawnEnemies {
-		g.newEnemy(g.player.X+100, g.player.Y+100)
-		g.newEnemy(g.player.X-100, g.player.Y-+100)
-		g.newEnemy(g.player.X-100, g.player.Y+100)
-		g.newEnemy(g.player.X+100, g.player.Y-100)
+		// Increase the number of enemies based on the player's score
+		additionalEnemies := g.Tick / 600
+
+		totalEnemies := baseEnemies + additionalEnemies
+
+		spawnDistance := 14.0 * 16 // Distance from the player to spawn enemies
+
+		for i := 0; i < totalEnemies; i++ {
+			// Gerar um ponto aleatório no mapa
+			randomX := float64(rand.Intn(1000)) * 16
+			randomY := float64(rand.Intn(1000)) * 16
+
+			// Randomly transform randomX and randomY to positive or negative
+			if rand.Intn(2) == 0 {
+				randomX = -randomX
+			}
+			if rand.Intn(2) == 0 {
+				randomY = -randomY
+			}
+
+			// Calcular o vetor de direção entre o jogador e o ponto aleatório
+			dirX := randomX - g.player.X
+			dirY := randomY - g.player.Y
+
+			// Normalizar o vetor de direção
+			length := math.Sqrt(dirX*dirX + dirY*dirY)
+			dirX /= length
+			dirY /= length
+
+			// Calcular a posição de spawn baseada na direção e na distância fixa
+			offsetX := g.player.X + spawnDistance*dirX
+			offsetY := g.player.Y + spawnDistance*dirY
+
+			g.newEnemy(offsetX, offsetY)
+		}
 	}
 }
 
@@ -56,6 +90,7 @@ func (g *Game) newEnemy(x, y float64) {
 			DirectionY: 0.0,
 			Velocity:   1.5,
 		},
+		PotionSpawnRate: 15,
 	})
 }
 
@@ -83,9 +118,29 @@ func (g *Game) updateEnemies() {
 		}
 
 		if *enemy.Health <= 0 {
-			g.killEnemy(enemy)
 			KillSoundPlayer.Play()
 			g.Points++
+
+			// Drop a potion based on enemy's potionSpawnRate
+			if rand.Intn(100) < enemy.PotionSpawnRate {
+				potionImg, _, err := ebitenutil.NewImageFromFile("assets/images/potion.png")
+				if err != nil {
+					// handle error
+					log.Fatal(err)
+				}
+				g.potions = append(g.potions, &entities.Potion{
+					Sprite: &entities.Sprite{
+						Img: potionImg,
+						X:   enemy.X,
+						Y:   enemy.Y,
+					},
+					AmtHeal: 2,
+					Status:  "DROPPING",
+					Count:   0,
+				})
+			}
+
+			g.killEnemy(enemy)
 			continue
 		}
 
