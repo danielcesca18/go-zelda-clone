@@ -22,6 +22,7 @@ var (
 	GameoverSoundPlayer  *audio.Player
 	PlayerHitSoundPlayer *audio.Player
 	HealSoundPlayer      *audio.Player
+	LevelUpSoundPlayer   *audio.Player
 )
 
 // for music
@@ -87,6 +88,16 @@ func CreateHealSound(filePath string) error {
 	return nil
 }
 
+func CreateLevelUpSoundPlayer(filePath string) error {
+	var err error
+	LevelUpSoundPlayer, err = CreateSound(filePath)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (g *Game) SetVolume(increase bool) {
 	if increase {
 		g.globalVolume += 0.1
@@ -105,6 +116,7 @@ func (g *Game) SetVolume(increase bool) {
 	GameoverSoundPlayer.SetVolume(g.globalVolume)
 	PlayerHitSoundPlayer.SetVolume(g.globalVolume)
 	HealSoundPlayer.SetVolume(g.globalVolume)
+	LevelUpSoundPlayer.SetVolume(g.globalVolume)
 }
 
 func SetVolumeValue(volume float64) {
@@ -114,6 +126,7 @@ func SetVolumeValue(volume float64) {
 	GameoverSoundPlayer.SetVolume(volume)
 	PlayerHitSoundPlayer.SetVolume(volume)
 	HealSoundPlayer.SetVolume(volume)
+	LevelUpSoundPlayer.SetVolume(volume)
 
 }
 
@@ -135,6 +148,9 @@ func MusicLoop() {
 	}
 	if !HealSoundPlayer.IsPlaying() {
 		HealSoundPlayer.Rewind()
+	}
+	if !LevelUpSoundPlayer.IsPlaying() {
+		LevelUpSoundPlayer.Rewind()
 	}
 }
 

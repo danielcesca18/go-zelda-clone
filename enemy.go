@@ -54,11 +54,28 @@ func (g *Game) spawnEnemy() {
 	}
 }
 
-func (g *Game) newEnemy(x, y float64) {
-	enemyImg, _, err := ebitenutil.NewImageFromFile("assets/images/enemy.png")
-	if err != nil {
-		// handle error
-		log.Fatal(err)
+func (g *Game) newEnemyType(x, y float64, enemyType int) {
+	var enemyImg *ebiten.Image
+	var weight float64
+	var health int
+	var potionSpawnRate int
+	var err error
+	if enemyType == 2 {
+		enemyImg, _, err = ebitenutil.NewImageFromFile("assets/images/enemy2.png")
+		if err != nil {
+			log.Fatal(err)
+		}
+		weight = 40
+		health = 35
+		potionSpawnRate = 30
+	} else {
+		enemyImg, _, err = ebitenutil.NewImageFromFile("assets/images/enemy1.png")
+		if err != nil {
+			log.Fatal(err)
+		}
+		weight = 20
+		health = 15
+		potionSpawnRate = 2
 	}
 
 	newCollider := entities.Collider{
@@ -68,12 +85,11 @@ func (g *Game) newEnemy(x, y float64) {
 			MaxX: x + 16,
 			MaxY: y + 16,
 		},
-		Weight: 20,
+		Weight: weight,
 	}
 
 	g.softColliders = append(g.softColliders, newCollider)
 
-	health := uint(20)
 	status := "CHASING"
 
 	g.enemies = append(g.enemies, &entities.Enemy{
@@ -90,8 +106,16 @@ func (g *Game) newEnemy(x, y float64) {
 			DirectionY: 0.0,
 			Velocity:   1.5,
 		},
-		PotionSpawnRate: 15,
+		PotionSpawnRate: potionSpawnRate,
 	})
+}
+
+func (g *Game) newEnemy(x, y float64) {
+	if rand.Intn(100) < 10 {
+		g.newEnemyType(x, y, 2)
+	} else {
+		g.newEnemyType(x, y, 1)
+	}
 }
 
 func (g *Game) killEnemy(enemy *entities.Enemy) {
@@ -120,6 +144,7 @@ func (g *Game) updateEnemies() {
 		if *enemy.Health <= 0 {
 			KillSoundPlayer.Play()
 			g.Points++
+			g.player.Experience += 3
 
 			// Drop a potion based on enemy's potionSpawnRate
 			if rand.Intn(100) < enemy.PotionSpawnRate {

@@ -12,6 +12,8 @@ type Player struct {
 	Status     string
 	HitCounter int
 	Invencible bool
+	Experience uint
+	Level      uint
 }
 
 type Attack struct {

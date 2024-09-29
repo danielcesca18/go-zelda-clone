@@ -134,14 +134,28 @@ func (g *Game) Attack() {
 
 		for _, enemy := range g.enemies {
 			if g.player.Hitbox.Overlaps(enemy.Sprite) {
-				*enemy.Health -= g.player.Attack.Damage
+				*enemy.Health -= int(g.player.Attack.Damage)
 				*enemy.Status = "HIT"
 			}
 		}
 	}
 }
 
+func (g *Game) LevelUp() {
+	if g.player.Experience >= g.player.Level*10 {
+		g.player.Level++
+		g.player.Experience = 0
+		g.player.MaxHealth += 5
+		*g.player.Health = g.player.MaxHealth
+		g.player.Attack.Damage += 1
+
+		LevelUpSoundPlayer.Play()
+	}
+}
+
 func (g *Game) UpdatePlayer() {
+	g.LevelUp()
+
 	CheckSoftCollision(g.player.Sprite, g.player.Collider, g.softColliders)
 
 	g.player.X += g.player.Dx

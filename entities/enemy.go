@@ -3,7 +3,7 @@ package entities
 type Enemy struct {
 	*Sprite
 	Status          *string
-	Health          *uint
+	Health          *int
 	HitCounter      int
 	FollowsPlayer   bool
 	Collider        Collider

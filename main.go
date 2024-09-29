@@ -79,10 +79,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 		// draw fps counter
 		msg := fmt.Sprintf(
-			"TPS: %0.2f\nEnemies: %d\nScore: %d",
+			"TPS: %0.2f\nEnemies: %d\nScore: %d\n\nDamage: %d",
 			ebiten.ActualTPS(),
 			len(g.enemies),
 			g.Points,
+			g.player.Attack.Damage,
 		)
 		ebitenutil.DebugPrintAt(screen, msg, 0, 0)
 		ebitenutil.DebugPrintAt(screen, "Controls: [W/A/S/D] [LButton] [Q/E/G] [F] [R]", 0, 225)
@@ -160,6 +161,10 @@ func main() {
 		log.Fatal(err)
 	}
 
+	if err := CreateLevelUpSoundPlayer("assets/sounds/levelup.wav"); err != nil {
+		log.Fatal(err)
+	}
+
 	// collider for buildings
 	hardColliders := make([]image.Rectangle, 0)
 	for layerIndex, layer := range tilemapJSON.Layers {
@@ -194,12 +199,14 @@ func main() {
 		}
 	}
 
-	playerHealth := uint(20)
+	playerHealth := uint(10)
 
 	game := Game{
 		GameState:    "RUNNING",
 		globalVolume: 0.1,
 		player: &entities.Player{
+			Experience: 0,
+			Level:      1,
 			Invencible: false,
 			Status:     "IDLE",
 			Sprite: &entities.Sprite{
