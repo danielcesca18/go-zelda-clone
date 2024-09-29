@@ -142,7 +142,7 @@ func (g *Game) UpdatePlayer() {
 
 	// morreu crashou
 	if *g.player.Health <= 0 {
-		g.player = nil
+		g.GameState = "GAMEOVER"
 	}
 }
 

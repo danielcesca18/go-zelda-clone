@@ -5,6 +5,7 @@ import "github.com/hajimehoshi/ebiten/v2"
 type Player struct {
 	*Sprite
 	Collider   Collider
+	MaxHealth  uint
 	Health     *uint
 	Attack     Attack
 	Hitbox     *Hitbox

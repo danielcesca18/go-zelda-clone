@@ -8,13 +8,12 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/hajimehoshi/ebiten/v2/vector"
 
 	"go-game/entities"
 )
 
 type Game struct {
-	// the image and position variables for our player
+	GameState            string
 	player               *entities.Player
 	enemies              []*entities.Enemy
 	potions              []*entities.Potion
@@ -35,63 +34,66 @@ type Game struct {
 }
 
 func (g *Game) Update() error {
-	g.HandleControls()
+	if g.GameState == "RUNNING" {
 
-	g.UpdatePlayer()
+		g.HandleControls()
 
-	g.spawnEnemy()
+		g.UpdatePlayer()
 
-	g.updateEnemies()
+		g.spawnEnemy()
 
-	g.UpdateCamera()
+		g.updateEnemies()
 
-	g.UpdateHitbox()
+		g.UpdateCamera()
 
-	g.Tick++
-	g.attackCounter++
+		g.UpdateHitbox()
+
+		MusicLoop()
+
+		g.Tick++
+		g.attackCounter++
+	}
 
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	screen.Fill(color.RGBA{120, 180, 255, 255})
+	if g.GameState == "RUNNING" || g.GameState == "PAUSED" {
+		screen.Fill(color.RGBA{120, 180, 255, 255})
 
-	opts := ebiten.DrawImageOptions{}
+		opts := ebiten.DrawImageOptions{}
 
-	g.DrawTilemap(screen, opts)
+		g.DrawTilemap(screen, opts)
 
-	g.DrawPlayer(screen, opts)
+		g.DrawPlayer(screen, opts)
 
-	g.DrawEnemies(screen, opts)
+		g.DrawEnemies(screen, opts)
 
-	g.DrawColliders(screen)
+		g.DrawColliders(screen)
 
-	g.DrawHitbox(screen)
+		g.DrawHitbox(screen)
 
-	g.DrawAttack(screen, opts)
+		g.DrawAttack(screen, opts)
 
-	MusicLoop()
+		// draw fps counter
+		msg := fmt.Sprintf(
+			"TPS: %0.2f\nEnemies: %d\nScore: %d",
+			ebiten.ActualTPS(),
+			len(g.enemies),
+			g.Points,
+		)
+		ebitenutil.DebugPrintAt(screen, msg, 0, 0)
+		ebitenutil.DebugPrintAt(screen, "Controls: [W/A/S/D] [LButton] [Q/E/G] [F] [R]", 0, 225)
 
-	// draw fps counter
-	msg := fmt.Sprintf(
-		"TPS: %0.2f\nEnemies: %d\nPoints: %d",
-		ebiten.ActualTPS(),
-		len(g.enemies),
-		g.Points,
-	)
-	ebitenutil.DebugPrintAt(screen, msg, 0, 0)
-	ebitenutil.DebugPrintAt(screen, "Controls: [W/A/S/D] [LButton] [Q/E/G] [F] [R]", 0, 225)
+		g.DrawHUD(screen)
 
-	g.DrawHUD(screen)
-}
+	} else if g.GameState == "GAMEOVER" {
+		MusicPlayer.Pause()
+		GameoverSoundPlayer.Play()
+		ebitenutil.DebugPrintAt(screen, "GAME OVER", 130, 110)
+		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Score: %d", g.Points), 130, 125)
 
-func (g *Game) DrawHUD(screen *ebiten.Image) {
-	// Draw HUD
-	// Draw health bar
-	ebitenutil.DebugPrintAt(screen, "Health", 170, 7)
-	vector.DrawFilledRect(screen, 209, 9, 102, 12, color.RGBA{255, 255, 255, 255}, false)
-	vector.DrawFilledRect(screen, 210, 10, 100, 10, color.RGBA{220, 30, 30, 255}, false)
-	vector.DrawFilledRect(screen, 210, 10, float32(100*(*g.player.Health)/20), 10, color.RGBA{0, 204, 0, 255}, false)
+	}
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
@@ -150,6 +152,14 @@ func main() {
 		log.Fatal(err)
 	}
 
+	if err := CreatePlayerHitSound("assets/sounds/playerhit.wav"); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := CreateGameoverSound("assets/sounds/gameover.wav"); err != nil {
+		log.Fatal(err)
+	}
+
 	// collider for buildings
 	hardColliders := make([]image.Rectangle, 0)
 	for layerIndex, layer := range tilemapJSON.Layers {
@@ -187,6 +197,7 @@ func main() {
 	playerHealth := uint(20)
 
 	game := Game{
+		GameState:    "RUNNING",
 		globalVolume: 0.1,
 		player: &entities.Player{
 			Invencible: false,
@@ -196,7 +207,8 @@ func main() {
 				X:   150.0,
 				Y:   150.0,
 			},
-			Health: &playerHealth,
+			MaxHealth: playerHealth,
+			Health:    &playerHealth,
 			Attack: entities.Attack{
 				Damage: 5,
 				Img:    attackImg,

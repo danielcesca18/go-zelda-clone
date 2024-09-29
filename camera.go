@@ -24,10 +24,10 @@ func (c *Camera) Constrain(
 	tilemapWidthPixels, tilemapHeightPixels, screenWidth, screenHeight float64,
 ) {
 	c.X = math.Min(c.X, 0.0)
-	c.Y = math.Min(c.Y, 0.0) + 8
+	c.Y = math.Min(c.Y, 0.0)
 
 	c.X = math.Max(c.X, screenWidth-tilemapWidthPixels)
-	c.Y = math.Max(c.Y, screenHeight-tilemapHeightPixels) + 16
+	c.Y = math.Max(c.Y, screenHeight-tilemapHeightPixels)
 }
 
 // function that calls the other two functions

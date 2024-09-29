@@ -86,6 +86,7 @@ func (g *Game) IsTouchingPlayer(spriteCollider entities.Collider, player entitie
 		if !player.Invencible {
 			*g.player.Health -= 1
 			g.player.Invencible = true
+			PlayerHitSoundPlayer.Play()
 		}
 		return true
 	}
