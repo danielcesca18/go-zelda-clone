@@ -11,6 +11,11 @@ import (
 
 func (g *Game) HandleControls() {
 
+	// Level up
+	if ebiten.IsKeyPressed(ebiten.KeyUp) {
+		g.player.Experience += 10
+	}
+
 	// God mode
 	if inpututil.IsKeyJustPressed(ebiten.KeyTab) {
 		g.player.MaxHealth = 1000
@@ -188,9 +193,15 @@ func (g *Game) UpdatePlayer() {
 		}
 	}
 
-	// morreu crashou
 	if *g.player.Health <= 0 {
-		g.GameState = "GAMEOVER"
+		if g.player.Revives > 0 {
+			HealSoundPlayer.Play()
+			*g.player.Health = g.player.MaxHealth / 4
+			g.player.Revives--
+		} else {
+			*g.player.Health = 0
+			g.GameState = "GAMEOVER"
+		}
 	}
 }
 

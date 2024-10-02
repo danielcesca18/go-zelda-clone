@@ -30,15 +30,15 @@ func (g *Game) UpdateHitbox() {
 	}
 
 	// Definir uma distância fixa do jogador
-	distance := 14.0
+	distance := g.player.Hitbox.Distance
 
 	// Calcular a nova posição da hitbox
 	hitboxX := playerCenterX + directionX*distance
 	hitboxY := playerCenterY + directionY*distance
 
 	// Calcular os vértices da hitbox com base na nova posição e direção
-	halfWidth := 20.0  // Metade da largura da hitbox (16x16)
-	halfHeight := 14.0 // Metade da altura da hitbox (16x16)
+	halfWidth := g.player.Hitbox.Width / 2   // Metade da largura da hitbox (16x16)
+	halfHeight := g.player.Hitbox.Height / 2 // Metade da altura da hitbox (16x16)
 
 	vertices := [4][2]float64{
 		{-halfWidth, -halfHeight},

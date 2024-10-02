@@ -9,6 +9,7 @@ type Player struct {
 	Health             *uint
 	Attack             Attack
 	Speed              float64
+	Revives            int
 	Hitbox             *Hitbox
 	Status             string
 	HitCounter         int

@@ -1,12 +1,20 @@
 package main
 
 import (
+	"fmt"
+	"go-game/entities"
 	"image"
 	"image/color"
+	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
+)
+
+var (
+	PowerUps        = []entities.PowerUp{}
+	PowerUpsIndexes = []int{}
 )
 
 func (g *Game) DrawLevelUp(screen *ebiten.Image) {
@@ -24,38 +32,96 @@ func (g *Game) DrawLevelUp(screen *ebiten.Image) {
 		image.Rect(startX, y, startX+rectWidth, y+rectHeight),
 	}
 
-	for i, rect := range rects {
-		vector.DrawFilledRect(screen, float32(rect.Min.X), float32(rect.Min.Y), float32(rect.Dx()), float32(rect.Dy()), color.RGBA{255, 0, 0, 255}, false)
-		if i < len(PowerUps) {
+	// pu1, pu2, pu3 := rand.Intn(3), rand.Intn(3), rand.Intn(3)
+
+	if len(PowerUpsIndexes) == 0 {
+		for _, rect := range rects {
+
+			var puIndex int
+			for {
+				puIndex = rand.Intn(len(PowerUps))
+				duplicate := false
+				for _, index := range PowerUpsIndexes {
+					if index == puIndex {
+						duplicate = true
+						break
+					}
+				}
+				if !duplicate {
+					break
+				}
+			}
+			PowerUpsIndexes = append(PowerUpsIndexes, puIndex)
+
+			vector.DrawFilledRect(screen, float32(rect.Min.X), float32(rect.Min.Y), float32(rect.Dx()), float32(rect.Dy()), color.RGBA{255, 0, 0, 255}, false)
 			op := &ebiten.DrawImageOptions{}
-			op.GeoM.Scale(float64(rect.Dx())/float64(PowerUps[i].Img.Bounds().Dx()), float64(rect.Dy())/float64(PowerUps[i].Img.Bounds().Dy()))
+			op.GeoM.Scale(float64(rect.Dx())/float64(PowerUps[puIndex].Img.Bounds().Dx()), float64(rect.Dy())/float64(PowerUps[puIndex].Img.Bounds().Dy()))
 			op.GeoM.Translate(float64(rect.Min.X), float64(rect.Min.Y))
-			screen.DrawImage(PowerUps[i].Img, op)
+			screen.DrawImage(PowerUps[puIndex].Img, op)
 		}
+	}
+
+	for i, rect := range rects {
+
+		vector.DrawFilledRect(screen, float32(rect.Min.X), float32(rect.Min.Y), float32(rect.Dx()), float32(rect.Dy()), color.RGBA{255, 0, 0, 255}, false)
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Scale(float64(rect.Dx())/float64(PowerUps[PowerUpsIndexes[i]].Img.Bounds().Dx()), float64(rect.Dy())/float64(PowerUps[PowerUpsIndexes[i]].Img.Bounds().Dy()))
+		op.GeoM.Translate(float64(rect.Min.X), float64(rect.Min.Y))
+		screen.DrawImage(PowerUps[PowerUpsIndexes[i]].Img, op)
 	}
 
 	if g.TimerPU > 30 {
 		// Handle clicks on the rectangles
-		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
 			x, y := ebiten.CursorPosition()
 			for i, rect := range rects {
 				if rect.Min.X <= x && x <= rect.Max.X && rect.Min.Y <= y && y <= rect.Max.Y {
-					//g.UsePowerUp(i)
 					g.player.PowerUps = append(g.player.PowerUps, PowerUps[i])
 
-					if PowerUps[i].Name == "health" {
-						g.player.MaxHealth += 2
-						*g.player.Health += 2
-					} else if PowerUps[i].Name == "attack" {
-						g.player.Attack.Damage += 1
-					} else if PowerUps[i].Name == "speed" {
-						g.player.AttackSpeed -= 3
-						g.player.Speed += 0.1
+					for j := 0; j < len(PowerUps); j++ {
+						if PowerUps[PowerUpsIndexes[i]].Name == "health" {
+							g.player.MaxHealth += 2
+							*g.player.Health += 2
+							fmt.Println("health")
+
+						} else if PowerUps[PowerUpsIndexes[i]].Name == "attack" {
+							g.player.Attack.Damage += 1
+							fmt.Println("attack")
+
+						} else if PowerUps[PowerUpsIndexes[i]].Name == "speed" {
+							g.player.AttackSpeed -= 3
+							g.player.Speed += 0.1
+							fmt.Println("speed")
+
+						} else if PowerUps[PowerUpsIndexes[i]].Name == "death" {
+							g.killEnemies = true
+							fmt.Println("death")
+
+						} else if PowerUps[PowerUpsIndexes[i]].Name == "defense" {
+							fmt.Println("defense")
+
+						} else if PowerUps[PowerUpsIndexes[i]].Name == "hitbox" {
+							g.player.Hitbox.Width += 2
+							g.player.Hitbox.Distance += 1
+							fmt.Println("hitbox")
+
+						} else if PowerUps[PowerUpsIndexes[i]].Name == "revive" {
+							g.player.Revives++
+							fmt.Println("revive")
+
+						} else if PowerUps[PowerUpsIndexes[i]].Name == "thornmail" {
+							fmt.Println("thornmail")
+
+						}
+
+						PowerUpsIndexes = []int{}
+
+						g.GameState = "RUNNING"
+						LevelUpSoundPlayer.Rewind()
+						LevelUpSoundPlayer.Play()
+
+						break
 					}
-
-					g.GameState = "RUNNING"
-
-					break
 				}
 			}
 		}

@@ -35,8 +35,6 @@ type Game struct {
 	TimerPU              int
 }
 
-var PowerUps = []entities.PowerUp{}
-
 func (g *Game) Update() error {
 
 	if g.GameState == "RUNNING" {
@@ -189,6 +187,9 @@ func initializeGame() *Game {
 					{0, 0},
 					{0, 0},
 				},
+				Width:    30,
+				Height:   28,
+				Distance: 15,
 			},
 		},
 		enemies:              []*entities.Enemy{},
@@ -215,12 +216,19 @@ func (g *Game) RestartGame() {
 }
 
 var (
-	playerImg   *ebiten.Image
-	attackImg   *ebiten.Image
-	tilemapImg  *ebiten.Image
-	healthPUImg *ebiten.Image
-	attackPUImg *ebiten.Image
-	speedPUImg  *ebiten.Image
+	playerImg  *ebiten.Image
+	attackImg  *ebiten.Image
+	tilemapImg *ebiten.Image
+
+	healthPUImg    *ebiten.Image
+	attackPUImg    *ebiten.Image
+	speedPUImg     *ebiten.Image
+	deathPUImg     *ebiten.Image
+	defensePUImg   *ebiten.Image
+	hitboxPUImg    *ebiten.Image
+	revivePUImg    *ebiten.Image
+	thornmailPUImg *ebiten.Image
+
 	tilemapJSON *TilemapJSON
 	tilesets    []Tileset
 )
@@ -290,6 +298,56 @@ func main() {
 		Name: "speed",
 		Img:  speedPUImg,
 	})
+
+	deathPUImg, _, err = ebitenutil.NewImageFromFile("assets/images/death.png")
+	if err != nil {
+		// handle error
+		log.Fatal(err)
+	}
+	PowerUps = append(PowerUps, entities.PowerUp{
+		Name: "death",
+		Img:  deathPUImg,
+	})
+
+	// defensePUImg, _, err = ebitenutil.NewImageFromFile("assets/images/defense.png")
+	// if err != nil {
+	// 	// handle error
+	// 	log.Fatal(err)
+	// }
+	// PowerUps = append(PowerUps, entities.PowerUp{
+	// 	Name: "defense",
+	// 	Img:  defensePUImg,
+	// })
+
+	hitboxPUImg, _, err = ebitenutil.NewImageFromFile("assets/images/hitbox.png")
+	if err != nil {
+		// handle error
+		log.Fatal(err)
+	}
+	PowerUps = append(PowerUps, entities.PowerUp{
+		Name: "hitbox",
+		Img:  hitboxPUImg,
+	})
+
+	revivePUImg, _, err = ebitenutil.NewImageFromFile("assets/images/revive.png")
+	if err != nil {
+		// handle error
+		log.Fatal(err)
+	}
+	PowerUps = append(PowerUps, entities.PowerUp{
+		Name: "revive",
+		Img:  revivePUImg,
+	})
+
+	// thornmailPUImg, _, err = ebitenutil.NewImageFromFile("assets/images/thornmail.png")
+	// if err != nil {
+	// 	// handle error
+	// 	log.Fatal(err)
+	// }
+	// PowerUps = append(PowerUps, entities.PowerUp{
+	// 	Name: "thornmail",
+	// 	Img:  thornmailPUImg,
+	// })
 
 	// SOUNDS
 

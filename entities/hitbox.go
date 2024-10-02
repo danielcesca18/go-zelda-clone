@@ -7,6 +7,7 @@ import (
 // Hitbox representa uma forma geométrica arbitrária com vértices definidos
 type Hitbox struct {
 	X, Y, DirectionX, DirectionY float64
+	Width, Height, Distance      float64
 	Vertices                     [4][2]float64 // Cada vértice tem suas próprias coordenadas X e Y
 }
 
