@@ -12,7 +12,7 @@ import (
 func (g *Game) HandleControls() {
 
 	// Player attack
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 		g.Attack()
 	}
 
@@ -93,7 +93,7 @@ func (g *Game) Move(directionX, directionY float64) {
 		directionY /= magnitude
 
 		// Aplicar a velocidade do jogador ao vetor de direção normalizado
-		velocity := 2.0 // Ajuste este valor conforme necessário
+		velocity := g.player.Speed // Ajuste este valor conforme necessário
 		g.player.Dx = directionX * velocity
 		g.player.Dy = directionY * velocity
 	} else {
@@ -145,11 +145,10 @@ func (g *Game) LevelUp() {
 	if g.player.Experience >= g.player.Level*10 {
 		g.player.Level++
 		g.player.Experience = 0
-		g.player.MaxHealth += 5
-		*g.player.Health = g.player.MaxHealth
-		g.player.Attack.Damage += 1
 
 		LevelUpSoundPlayer.Play()
+
+		g.GameState = "LEVELUP"
 	}
 }
 
@@ -214,27 +213,33 @@ func (g *Game) DrawAttack(screen *ebiten.Image, opts ebiten.DrawImageOptions) {
 	// Draw attack image
 	if g.player.Status == "ATTACK" {
 
-		// Reset GeoM
-		opts.GeoM.Reset()
-
-		// Translate to the hitbox position
-		opts.GeoM.Translate(-float64(frameWidth)/2, -float64(frameHeight)/2)                 // Center the image
-		opts.GeoM.Rotate(math.Atan2(g.player.Hitbox.DirectionY, g.player.Hitbox.DirectionX)) // Rotate around the center
-		opts.GeoM.Translate(g.player.Hitbox.X, g.player.Hitbox.Y)                            // Move to the hitbox position
-		opts.GeoM.Translate(g.cam.X, g.cam.Y)                                                // Adjust for camera position
-
 		// Calculate the frame to draw
-		i := (g.attackCounter / 5) % frameCount
+		i := (g.attackCounter / 4) % frameCount
 		sx, sy := frameOX+i*frameWidth, frameOY
 
-		// Draw the attack image
-		screen.DrawImage(g.player.Attack.Img.SubImage(image.Rect(sx, sy, sx+frameWidth, sy+frameHeight)).(*ebiten.Image), &opts)
+		if i != frameCount-1 && g.player.AttackSpeedCounter == 0 {
+			// Reset GeoM
+			opts.GeoM.Reset()
+
+			// Translate to the hitbox position
+			opts.GeoM.Translate(-float64(frameWidth)/2, -float64(frameHeight)/2)                 // Center the image
+			opts.GeoM.Rotate(math.Atan2(g.player.Hitbox.DirectionY, g.player.Hitbox.DirectionX)) // Rotate around the center
+			opts.GeoM.Translate(g.player.Hitbox.X, g.player.Hitbox.Y)                            // Move to the hitbox position
+			opts.GeoM.Translate(g.cam.X, g.cam.Y)                                                // Adjust for camera position
+
+			// Draw the attack image
+			screen.DrawImage(g.player.Attack.Img.SubImage(image.Rect(sx, sy, sx+frameWidth, sy+frameHeight)).(*ebiten.Image), &opts)
+
+		} else {
+			g.player.AttackSpeedCounter++
+		}
 
 		// Reset GeoM
 		opts.GeoM.Reset()
 
 		// Reset player status to IDLE after the last frame
-		if i == frameCount-1 {
+		if g.player.AttackSpeedCounter >= g.player.AttackSpeed {
+			g.player.AttackSpeedCounter = 0
 			g.player.Status = "IDLE"
 		}
 	}

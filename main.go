@@ -32,7 +32,10 @@ type Game struct {
 	showColliders        bool
 	enemiesFollowsPlayer bool
 	globalVolume         float64
+	TimerPU              int
 }
+
+var PowerUps = []entities.PowerUp{}
 
 func (g *Game) Update() error {
 
@@ -64,7 +67,7 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	if g.GameState == "RUNNING" || g.GameState == "PAUSED" {
+	if g.GameState == "RUNNING" || g.GameState == "PAUSED" || g.GameState == "LEVELUP" {
 		screen.Fill(color.RGBA{120, 180, 255, 255})
 
 		opts := ebiten.DrawImageOptions{}
@@ -85,17 +88,19 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 		// draw fps counter
 		msg := fmt.Sprintf(
-			"TPS: %0.2f\nEnemies: %d\nScore: %d\n\nDamage: %d",
+			"TPS: %0.2f\nEnemies: %d\nScore: %d",
 			ebiten.ActualTPS(),
 			len(g.enemies),
 			g.Points,
-			g.player.Attack.Damage,
 		)
 		ebitenutil.DebugPrintAt(screen, msg, 0, 0)
-		ebitenutil.DebugPrintAt(screen, "Controls: [W/A/S/D] [LButton] [Q/E/G] [F] [R]", 0, 225)
+		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Damage: %d | Speed: %.2f | MaxHealth: %d", g.player.Attack.Damage, g.player.Speed, g.player.MaxHealth), 0, 225)
 
 		g.DrawHUD(screen)
 
+		if g.GameState == "LEVELUP" {
+			g.DrawLevelUp(screen)
+		}
 	} else if g.GameState == "GAMEOVER" {
 		MusicPlayer.Pause()
 		GameoverSoundPlayer.Play()
@@ -160,8 +165,10 @@ func initializeGame() *Game {
 				X:   150.0,
 				Y:   150.0,
 			},
-			MaxHealth: playerHealth,
-			Health:    &playerHealth,
+			MaxHealth:   playerHealth,
+			Health:      &playerHealth,
+			Speed:       2.0,
+			AttackSpeed: 40,
 			Attack: entities.Attack{
 				Damage: 5,
 				Img:    attackImg,
@@ -211,6 +218,9 @@ var (
 	playerImg   *ebiten.Image
 	attackImg   *ebiten.Image
 	tilemapImg  *ebiten.Image
+	healthPUImg *ebiten.Image
+	attackPUImg *ebiten.Image
+	speedPUImg  *ebiten.Image
 	tilemapJSON *TilemapJSON
 	tilesets    []Tileset
 )
@@ -249,6 +259,39 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// POWER UPS
+
+	healthPUImg, _, err = ebitenutil.NewImageFromFile("assets/images/heart.png")
+	if err != nil {
+		// handle error
+		log.Fatal(err)
+	}
+	PowerUps = append(PowerUps, entities.PowerUp{
+		Name: "health",
+		Img:  healthPUImg,
+	})
+
+	attackPUImg, _, err = ebitenutil.NewImageFromFile("assets/images/sword.png")
+	if err != nil {
+		// handle error
+		log.Fatal(err)
+	}
+	PowerUps = append(PowerUps, entities.PowerUp{
+		Name: "attack",
+		Img:  attackPUImg,
+	})
+	speedPUImg, _, err = ebitenutil.NewImageFromFile("assets/images/speed.png")
+	if err != nil {
+		// handle error
+		log.Fatal(err)
+	}
+	PowerUps = append(PowerUps, entities.PowerUp{
+		Name: "speed",
+		Img:  speedPUImg,
+	})
+
+	// SOUNDS
 
 	if err := CreateMusicSound("assets/sounds/music.ogg"); err != nil {
 		log.Fatal(err)

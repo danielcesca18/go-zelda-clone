@@ -1,0 +1,65 @@
+package main
+
+import (
+	"image"
+	"image/color"
+
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/hajimehoshi/ebiten/v2/vector"
+)
+
+func (g *Game) DrawLevelUp(screen *ebiten.Image) {
+	// Draw clickable rectangles
+	screenWidth, screenHeight := g.Layout(0, 0)
+	rectWidth, rectHeight := 80, 80
+	spacing := 10
+	totalWidth := 3*rectWidth + 2*spacing
+	startX := (screenWidth - totalWidth) / 2
+	y := (screenHeight - rectHeight) / 2
+
+	rects := []image.Rectangle{
+		image.Rect(startX+2*(rectWidth+spacing), y, startX+3*rectWidth+2*spacing, y+rectHeight),
+		image.Rect(startX+rectWidth+spacing, y, startX+2*rectWidth+spacing, y+rectHeight),
+		image.Rect(startX, y, startX+rectWidth, y+rectHeight),
+	}
+
+	for i, rect := range rects {
+		vector.DrawFilledRect(screen, float32(rect.Min.X), float32(rect.Min.Y), float32(rect.Dx()), float32(rect.Dy()), color.RGBA{255, 0, 0, 255}, false)
+		if i < len(PowerUps) {
+			op := &ebiten.DrawImageOptions{}
+			op.GeoM.Scale(float64(rect.Dx())/float64(PowerUps[i].Img.Bounds().Dx()), float64(rect.Dy())/float64(PowerUps[i].Img.Bounds().Dy()))
+			op.GeoM.Translate(float64(rect.Min.X), float64(rect.Min.Y))
+			screen.DrawImage(PowerUps[i].Img, op)
+		}
+	}
+
+	if g.TimerPU > 30 {
+		// Handle clicks on the rectangles
+		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+			x, y := ebiten.CursorPosition()
+			for i, rect := range rects {
+				if rect.Min.X <= x && x <= rect.Max.X && rect.Min.Y <= y && y <= rect.Max.Y {
+					//g.UsePowerUp(i)
+					g.player.PowerUps = append(g.player.PowerUps, PowerUps[i])
+
+					if PowerUps[i].Name == "health" {
+						g.player.MaxHealth += 2
+						*g.player.Health += 2
+					} else if PowerUps[i].Name == "attack" {
+						g.player.Attack.Damage += 1
+					} else if PowerUps[i].Name == "speed" {
+						g.player.AttackSpeed -= 3
+						g.player.Speed += 0.1
+					}
+
+					g.GameState = "RUNNING"
+
+					break
+				}
+			}
+		}
+	}
+
+	g.TimerPU++
+}

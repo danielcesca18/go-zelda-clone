@@ -21,4 +21,7 @@ func (g *Game) DrawHUD(screen *ebiten.Image) {
 	vector.DrawFilledRect(screen, 209, 22, 102, 4, color.RGBA{255, 255, 255, 255}, false)
 	expBarWidth := float32(100 * g.player.Experience / (g.player.Level * 10))
 	vector.DrawFilledRect(screen, 210, 23, expBarWidth, 2, color.RGBA{0, 0, 204, 255}, false)
+
+	msg := fmt.Sprintf("Score: %d", g.Points)
+	ebitenutil.DebugPrintAt(screen, msg, 210, 26)
 }
