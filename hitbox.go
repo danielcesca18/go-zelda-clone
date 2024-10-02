@@ -37,7 +37,7 @@ func (g *Game) UpdateHitbox() {
 	hitboxY := playerCenterY + directionY*distance
 
 	// Calcular os vértices da hitbox com base na nova posição e direção
-	halfWidth := 14.0  // Metade da largura da hitbox (16x16)
+	halfWidth := 20.0  // Metade da largura da hitbox (16x16)
 	halfHeight := 14.0 // Metade da altura da hitbox (16x16)
 
 	vertices := [4][2]float64{

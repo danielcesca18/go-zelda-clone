@@ -21,9 +21,9 @@ func (g *Game) spawnEnemy() {
 
 		totalEnemies := baseEnemies + additionalEnemies
 
-		spawnDistance := 14.0 * 16 // Distance from the player to spawn enemies
-
 		for i := 0; i < totalEnemies; i++ {
+			spawnDistance := float64(rand.Intn(10)+14) * 16 // Distance from the player to spawn enemies
+
 			// Gerar um ponto aleatório no mapa
 			randomX := float64(rand.Intn(1000)) * 16
 			randomY := float64(rand.Intn(1000)) * 16
@@ -60,15 +60,8 @@ func (g *Game) newEnemyType(x, y float64, enemyType int) {
 	var health int
 	var potionSpawnRate int
 	var err error
-	if enemyType == 2 {
-		enemyImg, _, err = ebitenutil.NewImageFromFile("assets/images/enemy2.png")
-		if err != nil {
-			log.Fatal(err)
-		}
-		weight = 40
-		health = 35
-		potionSpawnRate = 30
-	} else {
+
+	if enemyType == 1 {
 		enemyImg, _, err = ebitenutil.NewImageFromFile("assets/images/enemy1.png")
 		if err != nil {
 			log.Fatal(err)
@@ -76,6 +69,38 @@ func (g *Game) newEnemyType(x, y float64, enemyType int) {
 		weight = 20
 		health = 15
 		potionSpawnRate = 2
+	} else if enemyType == 2 {
+		enemyImg, _, err = ebitenutil.NewImageFromFile("assets/images/enemy2.png")
+		if err != nil {
+			log.Fatal(err)
+		}
+		weight = 20
+		health = 30
+		potionSpawnRate = 5
+	} else if enemyType == 3 {
+		enemyImg, _, err = ebitenutil.NewImageFromFile("assets/images/enemy3.png")
+		if err != nil {
+			log.Fatal(err)
+		}
+		weight = 40
+		health = 45
+		potionSpawnRate = 8
+	} else if enemyType == 4 {
+		enemyImg, _, err = ebitenutil.NewImageFromFile("assets/images/enemy4.png")
+		if err != nil {
+			log.Fatal(err)
+		}
+		weight = 60
+		health = 60
+		potionSpawnRate = 12
+	} else if enemyType == 5 {
+		enemyImg, _, err = ebitenutil.NewImageFromFile("assets/images/enemy5.png")
+		if err != nil {
+			log.Fatal(err)
+		}
+		weight = 80
+		health = 80
+		potionSpawnRate = 15
 	}
 
 	newCollider := entities.Collider{
@@ -111,11 +136,52 @@ func (g *Game) newEnemyType(x, y float64, enemyType int) {
 }
 
 func (g *Game) newEnemy(x, y float64) {
-	if rand.Intn(100) < 10 {
-		g.newEnemyType(x, y, 2)
-	} else {
-		g.newEnemyType(x, y, 1)
+	// Define the probabilities for each enemy type based on the game tick
+	// 2000 ticks is around 30 seconds
+	var enemyType int
+	switch {
+	case g.Tick > 5000:
+		if rand.Intn(100) < 20 {
+			enemyType = 5
+		} else if rand.Intn(100) < 40 {
+			enemyType = 4
+		} else if rand.Intn(100) < 60 {
+			enemyType = 3
+		} else {
+			enemyType = 2
+		}
+	case g.Tick > 4000:
+		if rand.Intn(100) < 20 {
+			enemyType = 4
+		} else if rand.Intn(100) < 40 {
+			enemyType = 3
+		} else if rand.Intn(100) < 60 {
+			enemyType = 2
+		} else {
+			enemyType = 1
+		}
+	case g.Tick > 3000:
+		if rand.Intn(100) < 20 {
+			enemyType = 3
+		} else if rand.Intn(100) < 40 {
+			enemyType = 2
+		} else {
+			enemyType = 1
+		}
+	case g.Tick > 2000:
+		if rand.Intn(100) < 20 {
+			enemyType = 2
+		} else {
+			enemyType = 1
+		}
+	case g.Tick > 1000:
+		enemyType = 1
+
+	default:
+		enemyType = 1
 	}
+
+	g.newEnemyType(x, y, enemyType)
 }
 
 func (g *Game) killEnemy(enemy *entities.Enemy) {
