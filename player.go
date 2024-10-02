@@ -11,6 +11,16 @@ import (
 
 func (g *Game) HandleControls() {
 
+	// God mode
+	if inpututil.IsKeyJustPressed(ebiten.KeyTab) {
+		g.player.MaxHealth = 1000
+		*g.player.Health = 1000
+		g.player.Attack.Damage = 100
+		g.player.Speed = 4
+		g.player.AttackSpeed = 0
+		g.player.Level = 999
+	}
+
 	// Player attack
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 		g.Attack()
