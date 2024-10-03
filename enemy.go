@@ -12,16 +12,13 @@ import (
 )
 
 func (g *Game) spawnEnemy() {
-	if g.Tick%180 == 0 && g.spawnEnemies {
-		// Base number of enemies to spawn
-		baseEnemies := 1
+	if g.SubHordesLeft == 0 {
+		g.SubHordesLeft = 3
+		g.Horde++
+	}
 
-		// Increase the number of enemies based on the player's score
-		additionalEnemies := g.Tick / 600
-
-		totalEnemies := baseEnemies + additionalEnemies
-
-		for i := 0; i < totalEnemies; i++ {
+	if g.Tick%900 == 0 && g.spawnEnemies {
+		for i := 0; i < (g.Horde * 4); i++ {
 			spawnDistance := float64(rand.Intn(10)+14) * 16 // Distance from the player to spawn enemies
 
 			// Gerar um ponto aleatório no mapa
@@ -51,6 +48,7 @@ func (g *Game) spawnEnemy() {
 
 			g.newEnemy(offsetX, offsetY)
 		}
+		g.SubHordesLeft--
 	}
 }
 
@@ -59,6 +57,7 @@ func (g *Game) newEnemyType(x, y float64, enemyType int) {
 	var weight float64
 	var health int
 	var potionSpawnRate int
+	var xpEarned int
 	var err error
 
 	if enemyType == 1 {
@@ -69,38 +68,43 @@ func (g *Game) newEnemyType(x, y float64, enemyType int) {
 		weight = 20
 		health = 15
 		potionSpawnRate = 2
+		xpEarned = 3
 	} else if enemyType == 2 {
 		enemyImg, _, err = ebitenutil.NewImageFromFile("assets/images/enemy2.png")
 		if err != nil {
 			log.Fatal(err)
 		}
 		weight = 20
-		health = 30
+		health = 25
 		potionSpawnRate = 5
+		xpEarned = 8
 	} else if enemyType == 3 {
 		enemyImg, _, err = ebitenutil.NewImageFromFile("assets/images/enemy3.png")
 		if err != nil {
 			log.Fatal(err)
 		}
 		weight = 40
-		health = 45
-		potionSpawnRate = 8
+		health = 30
+		potionSpawnRate = 10
+		xpEarned = 15
 	} else if enemyType == 4 {
 		enemyImg, _, err = ebitenutil.NewImageFromFile("assets/images/enemy4.png")
 		if err != nil {
 			log.Fatal(err)
 		}
 		weight = 60
-		health = 60
-		potionSpawnRate = 12
+		health = 45
+		potionSpawnRate = 15
+		xpEarned = 25
 	} else if enemyType == 5 {
 		enemyImg, _, err = ebitenutil.NewImageFromFile("assets/images/enemy5.png")
 		if err != nil {
 			log.Fatal(err)
 		}
 		weight = 80
-		health = 80
-		potionSpawnRate = 15
+		health = 60
+		potionSpawnRate = 30
+		xpEarned = 40
 	}
 
 	newCollider := entities.Collider{
@@ -132,6 +136,7 @@ func (g *Game) newEnemyType(x, y float64, enemyType int) {
 			Velocity:   1.5,
 		},
 		PotionSpawnRate: potionSpawnRate,
+		XPEarned:        xpEarned,
 	})
 }
 
@@ -140,27 +145,23 @@ func (g *Game) newEnemy(x, y float64) {
 	// 2000 ticks is around 30 seconds
 	var enemyType int
 	switch {
-	case g.Tick > 5000:
+	case g.Horde >= 20:
 		if rand.Intn(100) < 20 {
 			enemyType = 5
 		} else if rand.Intn(100) < 40 {
 			enemyType = 4
-		} else if rand.Intn(100) < 60 {
-			enemyType = 3
 		} else {
-			enemyType = 2
+			enemyType = 3
 		}
-	case g.Tick > 4000:
+	case g.Horde >= 15:
 		if rand.Intn(100) < 20 {
 			enemyType = 4
 		} else if rand.Intn(100) < 40 {
 			enemyType = 3
-		} else if rand.Intn(100) < 60 {
-			enemyType = 2
 		} else {
-			enemyType = 1
+			enemyType = 2
 		}
-	case g.Tick > 3000:
+	case g.Horde >= 10:
 		if rand.Intn(100) < 20 {
 			enemyType = 3
 		} else if rand.Intn(100) < 40 {
@@ -168,15 +169,12 @@ func (g *Game) newEnemy(x, y float64) {
 		} else {
 			enemyType = 1
 		}
-	case g.Tick > 2000:
+	case g.Horde >= 5:
 		if rand.Intn(100) < 20 {
 			enemyType = 2
 		} else {
 			enemyType = 1
 		}
-	case g.Tick > 1000:
-		enemyType = 1
-
 	default:
 		enemyType = 1
 	}
@@ -210,7 +208,7 @@ func (g *Game) updateEnemies() {
 		if *enemy.Health <= 0 {
 			KillSoundPlayer.Play()
 			g.Points++
-			g.player.Experience += 3
+			g.player.Experience += uint(enemy.XPEarned)
 
 			// Drop a potion based on enemy's potionSpawnRate
 			if rand.Intn(100) < enemy.PotionSpawnRate {

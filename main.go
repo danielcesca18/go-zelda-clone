@@ -33,6 +33,8 @@ type Game struct {
 	enemiesFollowsPlayer bool
 	globalVolume         float64
 	TimerPU              int
+	SubHordesLeft        int
+	Horde                int
 }
 
 func (g *Game) Update() error {
@@ -92,7 +94,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			g.Points,
 		)
 		ebitenutil.DebugPrintAt(screen, msg, 0, 0)
-		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Damage: %d | Speed: %.2f | MaxHealth: %d", g.player.Attack.Damage, g.player.Speed, g.player.MaxHealth), 0, 225)
+		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Horde: %d", g.Horde), 0, 225)
 
 		g.DrawHUD(screen)
 
@@ -202,6 +204,7 @@ func initializeGame() *Game {
 		spawnEnemies:         true,
 		killEnemies:          false,
 		enemiesFollowsPlayer: true,
+		Horde:                0,
 	}
 
 	game.softColliders = append(game.softColliders, game.player.Collider)

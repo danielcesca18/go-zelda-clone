@@ -70,7 +70,7 @@ func (g *Game) DrawLevelUp(screen *ebiten.Image) {
 		screen.DrawImage(PowerUps[PowerUpsIndexes[i]].Img, op)
 	}
 
-	if g.TimerPU > 30 {
+	if g.TimerPU > 70 {
 		// Handle clicks on the rectangles
 		if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
 			x, y := ebiten.CursorPosition()

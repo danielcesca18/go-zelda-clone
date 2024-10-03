@@ -9,6 +9,7 @@ type Enemy struct {
 	Collider        Collider
 	Knockback       Knockback
 	PotionSpawnRate int
+	XPEarned        int
 }
 
 type Knockback struct {
