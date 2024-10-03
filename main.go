@@ -35,6 +35,7 @@ type Game struct {
 	TimerPU              int
 	SubHordesLeft        int
 	Horde                int
+	AutoHit              bool
 }
 
 func (g *Game) Update() error {
@@ -205,6 +206,7 @@ func initializeGame() *Game {
 		killEnemies:          false,
 		enemiesFollowsPlayer: true,
 		Horde:                0,
+		AutoHit:              true,
 	}
 
 	game.softColliders = append(game.softColliders, game.player.Collider)

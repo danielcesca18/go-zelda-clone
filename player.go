@@ -11,6 +11,15 @@ import (
 
 func (g *Game) HandleControls() {
 
+	// Auto Hit
+	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+		if !g.AutoHit {
+			g.AutoHit = true
+		} else {
+			g.AutoHit = false
+		}
+	}
+
 	// Level up
 	if ebiten.IsKeyPressed(ebiten.KeyUp) {
 		g.player.Experience += 10
@@ -27,7 +36,7 @@ func (g *Game) HandleControls() {
 	}
 
 	// Player attack
-	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) || g.AutoHit {
 		g.Attack()
 	}
 
