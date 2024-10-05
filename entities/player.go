@@ -29,6 +29,7 @@ type Attack struct {
 }
 
 type PowerUp struct {
-	Name string
-	Img  *ebiten.Image
+	Name        string
+	Description string
+	Img         *ebiten.Image
 }

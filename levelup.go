@@ -8,6 +8,7 @@ import (
 	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
@@ -58,6 +59,12 @@ func (g *Game) DrawLevelUp(screen *ebiten.Image) {
 			op.GeoM.Scale(float64(rect.Dx())/float64(PowerUps[puIndex].Img.Bounds().Dx()), float64(rect.Dy())/float64(PowerUps[puIndex].Img.Bounds().Dy()))
 			op.GeoM.Translate(float64(rect.Min.X), float64(rect.Min.Y))
 			screen.DrawImage(PowerUps[puIndex].Img, op)
+
+			// Draw text below each image
+			text := PowerUps[puIndex].Description
+			textX := rect.Min.X + (rect.Dx()-len(text)*7)/2 // Center the text
+			textY := rect.Max.Y + 10                        // Position below the rectangle
+			ebitenutil.DebugPrintAt(screen, text, textX, textY)
 		}
 	}
 
@@ -68,6 +75,12 @@ func (g *Game) DrawLevelUp(screen *ebiten.Image) {
 		op.GeoM.Scale(float64(rect.Dx())/float64(PowerUps[PowerUpsIndexes[i]].Img.Bounds().Dx()), float64(rect.Dy())/float64(PowerUps[PowerUpsIndexes[i]].Img.Bounds().Dy()))
 		op.GeoM.Translate(float64(rect.Min.X), float64(rect.Min.Y))
 		screen.DrawImage(PowerUps[PowerUpsIndexes[i]].Img, op)
+
+		// Draw text below each image
+		text := PowerUps[PowerUpsIndexes[i]].Description
+		textX := rect.Min.X + (rect.Dx()-len(text)*7)/2 // Center the text
+		textY := rect.Max.Y + 10                        // Position below the rectangle
+		ebitenutil.DebugPrintAt(screen, text, textX, textY)
 	}
 
 	if g.TimerPU > 70 {

@@ -21,18 +21,17 @@ func (g *Game) HandleControls() {
 	}
 
 	// Level up
-	if ebiten.IsKeyPressed(ebiten.KeyUp) {
+	if ebiten.IsKeyPressed(ebiten.KeyN) {
 		g.player.Experience += 10
 	}
 
 	// God mode
-	if inpututil.IsKeyJustPressed(ebiten.KeyTab) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyM) {
 		g.player.MaxHealth = 1000
 		*g.player.Health = 1000
 		g.player.Attack.Damage = 100
 		g.player.Speed = 4
 		g.player.AttackSpeed = 0
-		g.player.Level = 999
 	}
 
 	// Player attack
@@ -67,7 +66,7 @@ func (g *Game) HandleControls() {
 	}
 
 	// enemies follows player
-	if inpututil.IsKeyJustPressed(ebiten.KeyG) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyZ) {
 		if !g.enemiesFollowsPlayer {
 			g.enemiesFollowsPlayer = true
 		} else {
@@ -76,7 +75,7 @@ func (g *Game) HandleControls() {
 	}
 
 	// auto spawn enemies
-	if inpututil.IsKeyJustPressed(ebiten.KeyQ) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyX) {
 		if !g.spawnEnemies {
 			g.spawnEnemies = true
 		} else {
@@ -85,7 +84,7 @@ func (g *Game) HandleControls() {
 	}
 
 	// spawn enemy
-	if inpututil.IsKeyJustPressed(ebiten.KeyE) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyC) {
 		randomOffsetX := float64(rand.Intn(201) - 100)
 		randomOffsetY := float64(rand.Intn(201) - 100)
 
@@ -93,12 +92,12 @@ func (g *Game) HandleControls() {
 	}
 
 	// kill all enemies
-	if inpututil.IsKeyJustPressed(ebiten.KeyR) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyV) {
 		g.killEnemies = true
 	}
 
 	// show colliders
-	if inpututil.IsKeyJustPressed(ebiten.KeyF) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyB) {
 		if !g.showColliders {
 			g.showColliders = true
 		} else {

@@ -90,10 +90,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 		// draw fps counter
 		msg := fmt.Sprintf(
-			"TPS: %0.2f\nEnemies: %d\nScore: %d",
+			"TPS: %0.2f\nEnemies: %d",
 			ebiten.ActualTPS(),
 			len(g.enemies),
-			g.Points,
 		)
 		ebitenutil.DebugPrintAt(screen, msg, 0, 0)
 		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Horde: %d", g.Horde), 0, 225)
@@ -286,8 +285,9 @@ func main() {
 		log.Fatal(err)
 	}
 	PowerUps = append(PowerUps, entities.PowerUp{
-		Name: "health",
-		Img:  healthPUImg,
+		Name:        "health",
+		Description: "+health",
+		Img:         healthPUImg,
 	})
 
 	attackPUImg, _, err = ebitenutil.NewImageFromFile("assets/images/sword.png")
@@ -296,8 +296,9 @@ func main() {
 		log.Fatal(err)
 	}
 	PowerUps = append(PowerUps, entities.PowerUp{
-		Name: "attack",
-		Img:  attackPUImg,
+		Name:        "attack",
+		Description: "+damage",
+		Img:         attackPUImg,
 	})
 	speedPUImg, _, err = ebitenutil.NewImageFromFile("assets/images/speed.png")
 	if err != nil {
@@ -305,8 +306,9 @@ func main() {
 		log.Fatal(err)
 	}
 	PowerUps = append(PowerUps, entities.PowerUp{
-		Name: "speed",
-		Img:  speedPUImg,
+		Name:        "speed",
+		Description: "+atk/mov spd",
+		Img:         speedPUImg,
 	})
 
 	deathPUImg, _, err = ebitenutil.NewImageFromFile("assets/images/death.png")
@@ -315,8 +317,9 @@ func main() {
 		log.Fatal(err)
 	}
 	PowerUps = append(PowerUps, entities.PowerUp{
-		Name: "death",
-		Img:  deathPUImg,
+		Name:        "death",
+		Description: "kill everyone",
+		Img:         deathPUImg,
 	})
 
 	vampirismPUImg, _, err = ebitenutil.NewImageFromFile("assets/images/vampirism.png")
@@ -325,8 +328,9 @@ func main() {
 		log.Fatal(err)
 	}
 	PowerUps = append(PowerUps, entities.PowerUp{
-		Name: "vampirism",
-		Img:  vampirismPUImg,
+		Name:        "vampirism",
+		Description: "vamp: 5 hits",
+		Img:         vampirismPUImg,
 	})
 
 	punchPUImg, _, err = ebitenutil.NewImageFromFile("assets/images/punch.png")
@@ -335,8 +339,9 @@ func main() {
 		log.Fatal(err)
 	}
 	PowerUps = append(PowerUps, entities.PowerUp{
-		Name: "punch",
-		Img:  punchPUImg,
+		Name:        "punch",
+		Description: "+knockback",
+		Img:         punchPUImg,
 	})
 
 	// defensePUImg, _, err = ebitenutil.NewImageFromFile("assets/images/defense.png")
@@ -355,8 +360,9 @@ func main() {
 		log.Fatal(err)
 	}
 	PowerUps = append(PowerUps, entities.PowerUp{
-		Name: "hitbox",
-		Img:  hitboxPUImg,
+		Name:        "hitbox",
+		Description: "+hitbox",
+		Img:         hitboxPUImg,
 	})
 
 	revivePUImg, _, err = ebitenutil.NewImageFromFile("assets/images/revive.png")
@@ -365,8 +371,9 @@ func main() {
 		log.Fatal(err)
 	}
 	PowerUps = append(PowerUps, entities.PowerUp{
-		Name: "revive",
-		Img:  revivePUImg,
+		Name:        "revive",
+		Description: "revive",
+		Img:         revivePUImg,
 	})
 
 	// thornmailPUImg, _, err = ebitenutil.NewImageFromFile("assets/images/thornmail.png")
