@@ -37,6 +37,7 @@ type Game struct {
 	Horde                int
 	AutoHit              bool
 	HitCounter           int
+	CameraShakeCounter   int
 }
 
 func (g *Game) Update() error {

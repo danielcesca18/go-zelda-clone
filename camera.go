@@ -39,4 +39,8 @@ func (g *Game) UpdateCamera() {
 		320,
 		240,
 	)
+	if g.CameraShakeCounter < 12 {
+		g.cam.X += math.Sin(float64(g.Tick)*0.8) * 1.5
+		g.cam.Y += math.Cos(float64(g.Tick)*0.8) * 1.5
+	}
 }

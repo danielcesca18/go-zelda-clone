@@ -163,6 +163,7 @@ func (g *Game) Attack() {
 				*enemy.Status = "HIT"
 
 				if !hited {
+					g.CameraShakeCounter = 0
 					g.HitCounter++
 					hited = true
 				}
@@ -238,6 +239,8 @@ func (g *Game) UpdatePlayer() {
 			g.GameState = "GAMEOVER"
 		}
 	}
+
+	g.CameraShakeCounter++
 }
 
 const (
