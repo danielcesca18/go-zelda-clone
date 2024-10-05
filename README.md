@@ -19,23 +19,23 @@ Or, if you are using WSL
 
 ## Controls
 ### Player
-- [WASD] Move
-- [LMouseButton] Attack
-- [Spacebar] Toggle auto attack
+- [ WASD ] Move
+- [ LMouseButton ] Attack
+- [ Spacebar ] Toggle auto attack
 
 ### Misc
-- [ESC] Pause and player power ups
-- [-] Volume up
-- [=] Volume down
+- [ ESC ] Pause and player power ups
+- [ - ] Volume up
+- [ = ] Volume down
 
 ### Dev
-- [Z] Toggle enemies follow player
-- [X\] Toggle enemies spawner
-- [C] Spawn a single enemy
-- [V] Kill all enemies
-- [B] Toggle collider boxes visualization
-- [N] Earn XP
-- [M] God mode
+- [ Z ] Toggle enemies follow player
+- [ X\ ] Toggle enemies spawner
+- [ C ] Spawn a single enemy
+- [ V ] Kill all enemies
+- [ B ] Toggle collider boxes visualization
+- [ N ] Earn XP
+- [ M ] God mode
 
 ## Assets
 - [Ninja Adventure Asset Pack](https://pixel-boy.itch.io/ninja-adventure-asset-pack)
