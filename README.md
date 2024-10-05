@@ -24,12 +24,13 @@ Or, if you are using WSL
 - [Spacebar] Toggle auto attack
 
 ### Misc
+- [ESC] Pause and player power ups
 - [-] Volume up
 - [=] Volume down
 
 ### Dev
 - [Z] Toggle enemies follow player
-- [X] Toggle enemies spawner
+- [X\] Toggle enemies spawner
 - [C] Spawn a single enemy
 - [V] Kill all enemies
 - [B] Toggle collider boxes visualization
