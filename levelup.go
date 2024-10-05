@@ -83,71 +83,75 @@ func (g *Game) DrawLevelUp(screen *ebiten.Image) {
 		ebitenutil.DebugPrintAt(screen, text, textX, textY)
 	}
 
-	if g.TimerPU > 70 {
-		// Handle clicks on the rectangles
-		if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
-			x, y := ebiten.CursorPosition()
-			for i, rect := range rects {
-				if rect.Min.X <= x && x <= rect.Max.X && rect.Min.Y <= y && y <= rect.Max.Y {
-					g.player.PowerUps = append(g.player.PowerUps, PowerUps[i])
+	// Handle clicks on the rectangles
+	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
+		x, y := ebiten.CursorPosition()
+		for i, rect := range rects {
+			if rect.Min.X <= x && x <= rect.Max.X && rect.Min.Y <= y && y <= rect.Max.Y {
 
-					for j := 0; j < len(PowerUps); j++ {
-						if PowerUps[PowerUpsIndexes[i]].Name == "health" {
-							g.player.MaxHealth += 2
-							*g.player.Health += 2
-							fmt.Println("health")
+				if g.player.PowerUps == nil {
+					g.player.PowerUps = make(map[string]int)
+				}
+				if g.player.PowerUps[PowerUps[PowerUpsIndexes[i]].Name] != 0 {
+					g.player.PowerUps[PowerUps[PowerUpsIndexes[i]].Name]++
+				} else {
+					g.player.PowerUps[PowerUps[PowerUpsIndexes[i]].Name] = 1
+				}
 
-						} else if PowerUps[PowerUpsIndexes[i]].Name == "attack" {
-							g.player.Attack.Damage += 1
-							fmt.Println("attack")
+				for j := 0; j < len(PowerUps); j++ {
+					if PowerUps[PowerUpsIndexes[i]].Name == "health" {
+						g.player.MaxHealth += 2
+						*g.player.Health += 2
+						fmt.Println("health")
 
-						} else if PowerUps[PowerUpsIndexes[i]].Name == "speed" {
-							g.player.AttackSpeed -= 3
-							g.player.Speed += 0.1
-							fmt.Println("speed")
+					} else if PowerUps[PowerUpsIndexes[i]].Name == "attack" {
+						g.player.Attack.Damage += 1
+						fmt.Println("attack")
 
-						} else if PowerUps[PowerUpsIndexes[i]].Name == "death" {
-							g.killEnemies = true
-							fmt.Println("death")
+					} else if PowerUps[PowerUpsIndexes[i]].Name == "speed" {
+						g.player.AttackSpeed -= 3
+						g.player.Speed += 0.1
+						fmt.Println("speed")
 
-						} else if PowerUps[PowerUpsIndexes[i]].Name == "defense" {
-							fmt.Println("defense")
+					} else if PowerUps[PowerUpsIndexes[i]].Name == "death" {
+						g.killEnemies = true
+						fmt.Println("death")
 
-						} else if PowerUps[PowerUpsIndexes[i]].Name == "hitbox" {
-							g.player.Hitbox.Width += 2
-							g.player.Hitbox.Distance += 1
-							fmt.Println("hitbox")
+					} else if PowerUps[PowerUpsIndexes[i]].Name == "defense" {
+						fmt.Println("defense")
 
-						} else if PowerUps[PowerUpsIndexes[i]].Name == "revive" {
-							g.player.Revives++
-							fmt.Println("revive")
+					} else if PowerUps[PowerUpsIndexes[i]].Name == "hitbox" {
+						g.player.Hitbox.Width += 2
+						g.player.Hitbox.Distance += 1
+						fmt.Println("hitbox")
 
-						} else if PowerUps[PowerUpsIndexes[i]].Name == "thornmail" {
-							fmt.Println("thornmail")
+					} else if PowerUps[PowerUpsIndexes[i]].Name == "revive" {
+						g.player.Revives++
+						fmt.Println("revive")
 
-						} else if PowerUps[PowerUpsIndexes[i]].Name == "vampirism" {
-							g.HitCounter = 0
-							g.player.Vampirism += 1
-							fmt.Println("vampirism")
+					} else if PowerUps[PowerUpsIndexes[i]].Name == "thornmail" {
+						fmt.Println("thornmail")
 
-						} else if PowerUps[PowerUpsIndexes[i]].Name == "punch" {
-							g.player.Punch += 0.2
-							fmt.Println("punch")
+					} else if PowerUps[PowerUpsIndexes[i]].Name == "vampirism" {
+						g.HitCounter = 0
+						g.player.Vampirism += 1
+						fmt.Println("vampirism")
 
-						}
+					} else if PowerUps[PowerUpsIndexes[i]].Name == "punch" {
+						g.player.Punch += 0.2
+						fmt.Println("punch")
 
-						PowerUpsIndexes = []int{}
-
-						g.GameState = "RUNNING"
-						LevelUpSoundPlayer.Rewind()
-						LevelUpSoundPlayer.Play()
-
-						break
 					}
+
+					PowerUpsIndexes = []int{}
+
+					g.GameState = "RUNNING"
+					LevelUpSoundPlayer.Rewind()
+					LevelUpSoundPlayer.Play()
+
+					break
 				}
 			}
 		}
 	}
-
-	g.TimerPU++
 }

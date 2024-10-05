@@ -18,7 +18,7 @@ type Player struct {
 	Invencible         bool
 	Experience         uint
 	Level              uint
-	PowerUps           []PowerUp
+	PowerUps           map[string]int
 	AttackSpeedCounter int
 	AttackSpeed        int
 }

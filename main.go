@@ -42,6 +42,14 @@ type Game struct {
 
 func (g *Game) Update() error {
 
+	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+		if g.GameState == "RUNNING" && g.GameState != "GAMEOVER" {
+			g.GameState = "PAUSED"
+		} else if g.GameState == "PAUSED" && g.GameState != "GAMEOVER" {
+			g.GameState = "RUNNING"
+		}
+	}
+
 	if g.GameState == "RUNNING" {
 
 		g.HandleControls()
@@ -60,6 +68,10 @@ func (g *Game) Update() error {
 
 		g.Tick++
 		g.attackCounter++
+	} else if g.GameState == "PAUSED" {
+		if inpututil.IsKeyJustPressed(ebiten.KeyR) {
+			g.RestartGame()
+		}
 	} else if g.GameState == "GAMEOVER" {
 		if inpututil.IsKeyJustPressed(ebiten.KeyR) {
 			g.RestartGame()
@@ -89,15 +101,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 		g.DrawPotions(screen, opts)
 
-		// draw fps counter
-		msg := fmt.Sprintf(
-			"TPS: %0.2f\nEnemies: %d",
-			ebiten.ActualTPS(),
-			len(g.enemies),
-		)
-		ebitenutil.DebugPrintAt(screen, msg, 0, 0)
-		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Horde: %d", g.Horde), 0, 225)
-
 		g.DrawHUD(screen)
 
 		if g.GameState == "LEVELUP" {
@@ -106,9 +109,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	} else if g.GameState == "GAMEOVER" {
 		MusicPlayer.Pause()
 		GameoverSoundPlayer.Play()
-		ebitenutil.DebugPrintAt(screen, "GAME OVER", 130, 110)
-		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Score: %d", g.Points), 130, 125)
-		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Press R to try again..."), 90, 170)
+		ebitenutil.DebugPrintAt(screen, "GAME OVER", 140, 110)
+		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Score: %d", g.Points), 140, 125)
+		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Press R to try again..."), 105, 170)
 
 	}
 }
@@ -209,6 +212,7 @@ func initializeGame() *Game {
 		enemiesFollowsPlayer: true,
 		Horde:                0,
 		AutoHit:              true,
+		CameraShakeCounter:   20,
 	}
 
 	game.softColliders = append(game.softColliders, game.player.Collider)
