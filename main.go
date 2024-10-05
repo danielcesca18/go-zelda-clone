@@ -142,9 +142,9 @@ func initializeGame() *Game {
 				// create a collider based on the position and size of the image
 				collider := image.Rect(
 					x,
-					y-16,
+					y,
 					x+img.Bounds().Dx(),
-					y-img.Bounds().Dy()-16,
+					y+img.Bounds().Dy(),
 				)
 				hardColliders = append(hardColliders, collider)
 			}

@@ -93,7 +93,7 @@ func (g *Game) DrawTilemap(screen *ebiten.Image, opts ebiten.DrawImageOptions) {
 
 			opts.GeoM.Translate(float64(x), float64(y))
 
-			opts.GeoM.Translate(0.0, -(float64(img.Bounds().Dy()) + 16))
+			// opts.GeoM.Translate(0.0, -(float64(img.Bounds().Dy()) + 16))
 
 			opts.GeoM.Translate(g.cam.X, g.cam.Y)
 
