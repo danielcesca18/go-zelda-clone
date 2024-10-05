@@ -1,6 +1,6 @@
 # Go Game Zelda Clone
 
-An open-source zelda-like game coded in Go with [Ebiten](https://ebitengine.org), for learning purposes.
+An open-source zelda-like game coded in Go with [Ebiten](https://ebitengine.org), for learning purposes. You can play it [clicking here](https://danielcesca18.github.io).
 
 ## Run Project
 You can run de project with:
