@@ -188,15 +188,29 @@ func (g *Game) LevelUp() {
 	}
 }
 
+func (g *Game) CheckMapCollision() {
+	// Update player position with boundary checks
+	newX := g.player.X + g.player.Dx
+	newY := g.player.Y + g.player.Dy
+
+	// Assuming mapWidth and mapHeight are the dimensions of the map
+	if newX >= 0 && newX <= float64(g.tilemapJSON.Layers[0].Width*16)-16 {
+		g.player.X = newX
+	}
+	CheckHardCollision(g.player.Sprite, g.hardColliders, X)
+
+	if newY >= 0 && newY <= float64(g.tilemapJSON.Layers[0].Height*16)-16 {
+		g.player.Y = newY
+	}
+	CheckHardCollision(g.player.Sprite, g.hardColliders, Y)
+}
+
 func (g *Game) UpdatePlayer() {
 	g.LevelUp()
 
-	CheckSoftCollision(g.player.Sprite, g.player.Collider, g.softColliders)
+	g.CheckMapCollision()
 
-	g.player.X += g.player.Dx
-	CheckHardCollision(g.player.Sprite, g.hardColliders, X)
-	g.player.Y += g.player.Dy
-	CheckHardCollision(g.player.Sprite, g.hardColliders, Y)
+	CheckSoftCollision(g.player.Sprite, g.player.Collider, g.softColliders)
 
 	g.player.Collider.Rect.MaxX = g.player.X + 16
 	g.player.Collider.Rect.MinX = g.player.X
