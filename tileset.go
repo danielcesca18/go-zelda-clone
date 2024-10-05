@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"image"
-	"os"
 	"path/filepath"
 	"strings"
 
@@ -68,8 +67,7 @@ func (d *DynTileset) Img(id int) *ebiten.Image {
 }
 
 func NewTileset(path string, gid int) (Tileset, bool, error) {
-	// read file contents
-	contents, err := os.ReadFile(path)
+	contents, err := EmbeddedFiles.ReadFile(path)
 	if err != nil {
 		return nil, false, err
 	}

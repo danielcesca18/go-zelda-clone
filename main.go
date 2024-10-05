@@ -36,6 +36,7 @@ type Game struct {
 	SubHordesLeft        int
 	Horde                int
 	AutoHit              bool
+	HitCounter           int
 }
 
 func (g *Game) Update() error {
@@ -161,10 +162,11 @@ func initializeGame() *Game {
 			Level:      1,
 			Invencible: false,
 			Status:     "IDLE",
+			Punch:      1,
 			Sprite: &entities.Sprite{
 				Img: playerImg,
-				X:   150.0,
-				Y:   150.0,
+				X:   40 * 16,
+				Y:   50 * 16,
 			},
 			MaxHealth:   playerHealth,
 			Health:      &playerHealth,
@@ -233,12 +235,15 @@ var (
 	hitboxPUImg    *ebiten.Image
 	revivePUImg    *ebiten.Image
 	thornmailPUImg *ebiten.Image
+	vampirismPUImg *ebiten.Image
+	punchPUImg     *ebiten.Image
 
 	tilemapJSON *TilemapJSON
 	tilesets    []Tileset
 )
 
 func main() {
+
 	ebiten.SetWindowSize(640, 480)
 	ebiten.SetWindowTitle("Ebiten Zelda Clone")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
@@ -263,7 +268,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	tilemapJSON, err = NewTilemapJSON("assets/maps/spawn.json")
+	tilemapJSON, err = NewTilemapJSON("assets/maps/map_spawn.json")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -312,6 +317,26 @@ func main() {
 	PowerUps = append(PowerUps, entities.PowerUp{
 		Name: "death",
 		Img:  deathPUImg,
+	})
+
+	vampirismPUImg, _, err = ebitenutil.NewImageFromFile("assets/images/vampirism.png")
+	if err != nil {
+		// handle error
+		log.Fatal(err)
+	}
+	PowerUps = append(PowerUps, entities.PowerUp{
+		Name: "vampirism",
+		Img:  vampirismPUImg,
+	})
+
+	punchPUImg, _, err = ebitenutil.NewImageFromFile("assets/images/punch.png")
+	if err != nil {
+		// handle error
+		log.Fatal(err)
+	}
+	PowerUps = append(PowerUps, entities.PowerUp{
+		Name: "punch",
+		Img:  punchPUImg,
 	})
 
 	// defensePUImg, _, err = ebitenutil.NewImageFromFile("assets/images/defense.png")

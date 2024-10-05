@@ -112,6 +112,15 @@ func (g *Game) DrawLevelUp(screen *ebiten.Image) {
 						} else if PowerUps[PowerUpsIndexes[i]].Name == "thornmail" {
 							fmt.Println("thornmail")
 
+						} else if PowerUps[PowerUpsIndexes[i]].Name == "vampirism" {
+							g.HitCounter = 0
+							g.player.Vampirism += 1
+							fmt.Println("vampirism")
+
+						} else if PowerUps[PowerUpsIndexes[i]].Name == "punch" {
+							g.player.Punch += 0.2
+							fmt.Println("punch")
+
 						}
 
 						PowerUpsIndexes = []int{}

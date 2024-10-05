@@ -1,14 +1,19 @@
 package main
 
 import (
+	"bytes"
+	"embed"
 	"log"
-	"os"
 	"path/filepath"
 
 	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/audio/vorbis"
 	"github.com/hajimehoshi/ebiten/v2/audio/wav"
 )
+
+//go:embed assets/sounds/*.ogg
+//go:embed assets/sounds/*.wav
+var EmbeddedSounds embed.FS
 
 const (
 	sampleRate = 44100
@@ -161,7 +166,7 @@ func CreateSound(filePath string) (*audio.Player, error) {
 	}
 
 	// Ler o arquivo de música
-	f, err := os.Open(filePath)
+	f, err := EmbeddedSounds.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
@@ -171,7 +176,7 @@ func CreateSound(filePath string) (*audio.Player, error) {
 	// fmt.Println("File extension: ", ext)
 
 	if ext == ".ogg" {
-		d, err := vorbis.DecodeWithSampleRate(sampleRate, f)
+		d, err := vorbis.DecodeWithSampleRate(sampleRate, bytes.NewReader(f))
 		if err != nil {
 			return nil, err
 		}
@@ -184,7 +189,7 @@ func CreateSound(filePath string) (*audio.Player, error) {
 		return player, nil
 
 	} else if ext == ".wav" {
-		d, err := wav.DecodeWithSampleRate(sampleRate, f)
+		d, err := wav.DecodeWithSampleRate(sampleRate, bytes.NewReader(f))
 		if err != nil {
 			return nil, err
 		}

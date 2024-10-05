@@ -17,8 +17,8 @@ func (g *Game) spawnEnemy() {
 		g.Horde++
 	}
 
-	if g.Tick%900 == 0 && g.spawnEnemies {
-		for i := 0; i < (g.Horde * 4); i++ {
+	if g.Tick%600 == 0 && g.spawnEnemies {
+		for i := 0; i < (g.Horde * 2); i++ {
 			spawnDistance := float64(rand.Intn(10)+14) * 16 // Distance from the player to spawn enemies
 
 			// Gerar um ponto aleatório no mapa
@@ -145,7 +145,7 @@ func (g *Game) newEnemy(x, y float64) {
 	// 2000 ticks is around 30 seconds
 	var enemyType int
 	switch {
-	case g.Horde >= 20:
+	case g.Horde >= 12:
 		if rand.Intn(100) < 20 {
 			enemyType = 5
 		} else if rand.Intn(100) < 40 {
@@ -153,7 +153,7 @@ func (g *Game) newEnemy(x, y float64) {
 		} else {
 			enemyType = 3
 		}
-	case g.Horde >= 15:
+	case g.Horde >= 9:
 		if rand.Intn(100) < 20 {
 			enemyType = 4
 		} else if rand.Intn(100) < 40 {
@@ -161,7 +161,7 @@ func (g *Game) newEnemy(x, y float64) {
 		} else {
 			enemyType = 2
 		}
-	case g.Horde >= 10:
+	case g.Horde >= 6:
 		if rand.Intn(100) < 20 {
 			enemyType = 3
 		} else if rand.Intn(100) < 40 {
@@ -169,7 +169,7 @@ func (g *Game) newEnemy(x, y float64) {
 		} else {
 			enemyType = 1
 		}
-	case g.Horde >= 5:
+	case g.Horde >= 3:
 		if rand.Intn(100) < 20 {
 			enemyType = 2
 		} else {
@@ -272,8 +272,8 @@ func (g *Game) updateEnemies() {
 				directionY /= magnitude
 
 				// Aplicar a velocidade do inimigo ao vetor de direção normalizado
-				enemy.Dx = -directionX * enemy.Knockback.Velocity
-				enemy.Dy = -directionY * enemy.Knockback.Velocity
+				enemy.Dx = -directionX * enemy.Knockback.Velocity * g.player.Punch
+				enemy.Dy = -directionY * enemy.Knockback.Velocity * g.player.Punch
 			}
 
 			enemy.HitCounter++

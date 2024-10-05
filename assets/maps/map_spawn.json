@@ -193,11 +193,11 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"tilesets\/TilesetFloor.json"
+         "source":"tileset_TilesetFloor.json"
         }, 
         {
          "firstgid":573,
-         "source":"tilesets\/buildings.json"
+         "source":"tileset_buildings.json"
         }],
  "tilewidth":16,
  "type":"map",

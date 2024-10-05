@@ -1,8 +1,9 @@
 package main
 
 import (
+	"embed"
+	_ "embed"
 	"encoding/json"
-	"os"
 	"path"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -15,6 +16,9 @@ type TilemapLayerJSON struct {
 	Height int    `json:"height"`
 	Name   string `json:"name"`
 }
+
+//go:embed assets/maps/*.json
+var EmbeddedFiles embed.FS
 
 // all layers in a tilemap
 type TilemapJSON struct {
@@ -48,7 +52,13 @@ func (t *TilemapJSON) GenTilesets() ([]Tileset, []*Tileset, error) {
 
 // opens the file, parses it, and returns the json object + potential error
 func NewTilemapJSON(filepath string) (*TilemapJSON, error) {
-	contents, err := os.ReadFile(filepath)
+	// contents, err := os.ReadFile(filepath)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// Lê o conteúdo do arquivo embutido
+	contents, err := EmbeddedFiles.ReadFile(filepath)
 	if err != nil {
 		return nil, err
 	}

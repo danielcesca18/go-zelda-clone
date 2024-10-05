@@ -10,6 +10,8 @@ type Player struct {
 	Attack             Attack
 	Speed              float64
 	Revives            int
+	Vampirism          int
+	Punch              float64
 	Hitbox             *Hitbox
 	Status             string
 	HitCounter         int

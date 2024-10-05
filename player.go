@@ -156,11 +156,24 @@ func (g *Game) Attack() {
 		g.player.Status = "ATTACK"
 		g.attackCounter = 0 // Reset the tick counter to start the animation from the beginning
 
+		hited := false
+
 		for _, enemy := range g.enemies {
 			if g.player.Hitbox.Overlaps(enemy.Sprite) {
 				*enemy.Health -= int(g.player.Attack.Damage)
 				*enemy.Status = "HIT"
+
+				if !hited {
+					g.HitCounter++
+					hited = true
+				}
+
 			}
+		}
+
+		if g.HitCounter == 5 {
+			g.HitCounter = 0
+			*g.player.Health = min(g.player.MaxHealth, *g.player.Health+uint(g.player.Vampirism))
 		}
 	}
 }
