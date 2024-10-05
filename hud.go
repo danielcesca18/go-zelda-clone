@@ -13,7 +13,11 @@ func (g *Game) DrawHUD(screen *ebiten.Image) {
 	// Draw HUD
 	// Draw health bar
 	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Lv.: %d", g.player.Level), 160, 7)
-	vector.DrawFilledRect(screen, 209, 9, 102, 12, color.RGBA{255, 255, 255, 255}, false)
+	if g.player.Invencible {
+		vector.DrawFilledRect(screen, 207, 7, 106, 16, color.RGBA{220, 30, 30, 255}, false)
+	} else {
+		vector.DrawFilledRect(screen, 209, 9, 102, 12, color.RGBA{255, 255, 255, 255}, false)
+	}
 	vector.DrawFilledRect(screen, 210, 10, 100, 10, color.RGBA{220, 30, 30, 255}, false)
 	vector.DrawFilledRect(screen, 210, 10, float32(100*(*g.player.Health)/g.player.MaxHealth), 10, color.RGBA{0, 204, 0, 255}, false)
 
